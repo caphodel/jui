@@ -1,0 +1,1 @@
+<label>{{{label}}}</label>{{#isnt label ""}}: {{/isnt}}<input type="{{type}}"></input>

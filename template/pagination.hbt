@@ -1,0 +1,7 @@
+<i class="fa fa-angle-left"></i>
+<j-textfield class="j-gotopage">Page</j-textfield>
+<span class="j-pageof">of&nbsp;</span>
+<i class="fa fa-angle-right"></i>
+<i class="fa fa-refresh"></i>
+<j-spacer></j-spacer>
+<span class="j-total">0 items</span>

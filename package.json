@@ -1,0 +1,20 @@
+{
+  "name": "jui2",
+  "version": "0.1.5",
+  "author": "Deddy Lasmono Putro",
+  "description": "Javascript User Interface for easier front end development",
+  "homepage": "none at the moment",
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-uglify": "~0.4.0",
+    "grunt-contrib-jshint": "~0.9.2",
+    "grunt-contrib-handlebars": "~0.7.0",
+    "grunt-contrib-cssmin": "~0.9.0",
+    "grunt-contrib-less": "~0.10.0",
+    "grunt-jsdoc": "~0.5.4",
+    "grunt-contrib-yuidoc": "~0.5.2",
+    "grunt-ftp-deploy": "~0.1.2",
+    "grunt-yui-compressor": "~0.3.3",
+    "grunt-contrib-copy": "~0.5.0"
+  }
+}

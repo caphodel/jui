@@ -1,0 +1,7 @@
+<thead>
+	<tr>
+		{{#each columns}}
+		<th>{{{this}}}</th>
+		{{/each}}
+	</tr>
+</thead>

@@ -1,0 +1,8 @@
+<div>
+</div>
+<j-toolbar>
+	<j-spacer>
+	</j-spacer>
+	<j-button class="j-table-form-cancel">{{cancel}}</j-button>
+	<j-button class="j-table-form-submit" color="blue">{{submit}}</j-button>
+</j-toolbar>

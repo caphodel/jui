@@ -1,0 +1,7 @@
+{{#each date}}
+<tr>
+	{{#each this}}
+	<td>{{this}}</td>
+	{{/each}}
+</tr>
+{{/each}}
