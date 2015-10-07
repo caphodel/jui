@@ -10,6 +10,7 @@
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function() {
+		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.colorPicker);
 
 		var $self = $(this);
 
@@ -18,17 +19,17 @@
 		jui2.ui.textField.proto.createdCallback.call(this, 'Color Picker')
 
 		$self.bind( "clickout", function(e){
-			if($(e.target).parents('j-colorPicker').length == 0 && $(e.target).parents('.j-canvas-pallete').length == 0)
-				$self.find('canvas').parent().remove();
+			if($(e.target).parents('j-colorPicker').length == 0 && $(e.target).parents('[belongto=j-colorPicker]').length == 0)
+				$('#j-colorPicker-'+$self.attr('id')).remove();
 		});
 
 		$self.click(function(e){
 			if($(e.target).prop('tagName') == 'J-BUTTON'){
-				$self.find('canvas').parent().remove();
+				$('#j-colorPicker-'+$self.attr('id')).remove();
 			}
 			else if($self.find('canvas').length > 0){
 				if($(e.target).parents('.j-canvas-pallete').length == 0)
-					$self.find('canvas').parent().remove();
+					$('#j-colorPicker-'+$self.attr('id')).remove();
 			}
 			else{
 				$self.append('<div class="j-canvas-pallete"><canvas width="284" height="155"></canvas><div><div></div>Hex:<br/><input class="j-colorPallete-hex"></input><br/><br/><j-button>Pick</j-button></div></div>');
@@ -38,21 +39,21 @@
 
 				var getColor = function(e) {
 					var newColor,
-					imageData = colorctx.getImageData(colorEventX, colorEventY, 1, 1);
+					imageData = colorctx.getImageData(colorEventX, colorEventY, 1, 1), picker = $('#j-colorPicker-'+$self.attr('id'));
 					//selectedColor = 'rgb(' + imageData.data[0] + ', ' + imageData.data[1] + ', ' + imageData.data[2] + ')';
 					//$self.find('.j-colorPallete-rgb').val(selectedColor)
-					$self.find('.j-colorPallete-hex').val("#" + componentToHex(imageData.data[0]) + componentToHex(imageData.data[1]) + componentToHex(imageData.data[2]))
-					$self.find('.j-canvas-pallete > div > div').css('background', $self.find('.j-colorPallete-hex').val());
+					//picker.find('.j-colorPallete-hex').val("#" + componentToHex(imageData.data[0]) + componentToHex(imageData.data[1]) + componentToHex(imageData.data[2]))
+					picker.find('.j-canvas-pallete > div > div').css('background', "#" + componentToHex(imageData.data[0]) + componentToHex(imageData.data[1]) + componentToHex(imageData.data[2]));
 				};
 
 				var setColor = function(e) {
 					var newColor,
-					imageData = colorctx.getImageData(colorEventX, colorEventY, 1, 1);
+					imageData = colorctx.getImageData(colorEventX, colorEventY, 1, 1), picker = $('#j-colorPicker-'+$self.attr('id'));
 					//selectedColor = 'rgb(' + imageData.data[0] + ', ' + imageData.data[1] + ', ' + imageData.data[2] + ')';
 					//$self.find('.j-colorPallete-rgb').val(selectedColor)
-					$self.find('.j-colorPallete-hex').val("#" + componentToHex(imageData.data[0]) + componentToHex(imageData.data[1]) + componentToHex(imageData.data[2]))
-					$self.find('.j-canvas-pallete > div > div').css('background', $self.find('.j-colorPallete-hex').val());
-					$self.find('.j-colorPallete-hex').attr('hex', $self.find('.j-colorPallete-hex').val());
+					picker.find('.j-colorPallete-hex').val("#" + componentToHex(imageData.data[0]) + componentToHex(imageData.data[1]) + componentToHex(imageData.data[2]))
+					picker.find('.j-canvas-pallete > div > div').css('background', picker.find('.j-colorPallete-hex').val());
+					picker.find('.j-colorPallete-hex').attr('hex', picker.find('.j-colorPallete-hex').val());
 				};
 
 				var componentToHex = function(c) {
@@ -89,9 +90,10 @@
 				$self.find('.j-colorPallete-hex').attr('hex', '#ffffff');
 
 				$self.find('j-button').click(function(){
-					$self.val($self.find('.j-colorPallete-hex').attr('hex'));
-					$self.find('i').css('color', $self.find('.j-colorPallete-hex').attr('hex'));
-					$self.find('canvas').parent().remove();
+					var picker = $('#j-colorPicker-'+$self.attr('id'));
+					$self.val(picker.find('.j-colorPallete-hex').attr('hex'));
+					$self.find('i').css('color', picker.find('.j-colorPallete-hex').attr('hex'));
+					$('#j-colorPicker-'+$self.attr('id')).remove();
 				})
 
 				$colors.mousemove(function(e) {
@@ -101,8 +103,9 @@
 				});
 
 				$colors.mouseout(function(e) {
-					$self.find('.j-canvas-pallete > div > div').css('background', $self.find('.j-colorPallete-hex').attr('hex'));
-					$self.find('.j-colorPallete-hex').val($self.find('.j-colorPallete-hex').attr('hex'));
+					var picker = $('#j-colorPicker-'+$self.attr('id'));
+					picker.find('.j-canvas-pallete > div > div').css('background', picker.find('.j-colorPallete-hex').attr('hex'));
+					picker.find('.j-colorPallete-hex').val(picker.find('.j-colorPallete-hex').attr('hex'));
 				});
 
 				$colors.click(function(e) {
@@ -110,6 +113,8 @@
 					colorEventY = e.pageY - $colors.offset().top;
 					setColor(e);
 				});
+				$('body').append('<j-modal belongto="j-colorPicker" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-colorPicker-'+$self.attr('id')+'"></j-modal>');
+				$colors.parent().detach().appendTo('#j-colorPicker-'+$self.attr('id'))
 			}
 		})
 

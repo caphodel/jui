@@ -129,26 +129,36 @@ $('#table1').on('afterdraw', function(){
 				if($self.attr('style')){
 					if($self.attr('style').match(/height/ig)){
 						if($self.attr('style').match(/height/ig).length == 0 && typeof $self.attr('height') == 'undefined'){
-							$self.find('> .j-table-body').css({
+							$self.css({
 								'flex': 0,
 								'-webkit-box-flex': 0,
 								'-webkit-flex': 0,
 								'display': 'block'
 							})
 						}
-						else{
+						/*else{
 							$self.find('> .j-table-body').css({
 								'flex': '',
 								'-webkit-box-flex': '',
 								'-webkit-flex': '',
-								'display': ''
+								'display': 'flex'
+							})
+						}*/
+					}
+					else{
+						if(typeof $self.attr('height') == 'undefined'){
+							$self.css({
+								'flex': 0,
+								'-webkit-box-flex': 0,
+								'-webkit-flex': 0,
+								'display': 'block'
 							})
 						}
 					}
 				}
 				else{
-					if($self.attr('height') == undefined){
-						$self.find('> .j-table-body').css({
+					if(typeof $self.attr('height') == 'undefined'){
+						$self.css({
 							'flex': '0',
 							'-webkit-box-flex': '0',
 							'-webkit-flex': '0',
@@ -160,7 +170,7 @@ $('#table1').on('afterdraw', function(){
 		})
 
 		$self.on('self.afterdraw', function(){
-			$(this).css('display', 'block')
+			//$(this).css('display', 'block')
 			//setTimeout(function)
 			var idx = $self.find('> .j-table-body > table > thead > tr > th').filter(function(){
 				return this.innerHTML === ''

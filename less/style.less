@@ -236,30 +236,25 @@ j-textArea > * {
 }
 
 /************* colorPicker *****************/
-j-colorPicker > div {
-  position: absolute;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
-  left: 125px;
+[belongto=j-colorPicker] > div {
   background: #fff;
-  top: 25px;
   overflow: hidden;
-  min-width:230px padding: 10px;
+  min-width:230px;
   width: 365px;
-  padding: 10px;
 }
-j-colorPicker > div > div {
+[belongto=j-colorPicker] > div > div {
   display: inline-block;
   width: 65px;
   float: right;
 }
-j-colorPicker > div > canvas {
+[belongto=j-colorPicker] > div > canvas {
   float: left;
 }
-j-colorPicker > div > div > div {
+[belongto=j-colorPicker] > div > div > div {
   width: 55px;
   height: 55px;
 }
-j-colorPicker > div input {
+[belongto=j-colorPicker] > div input {
   width: 55px !important;
   padding-right: 0 !important;
 }
@@ -271,53 +266,51 @@ j-comboField {
 j-comboField > div {
   position: absolute;
   display: none;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
-  left: 0;
-  background: #fff;
-  top: 25px;
-  overflow: hidden;
+}
+j-modal[belongto=j-comboField]{
   min-width: 230px;
 }
-j-comboField j-table {
-  padding: 10px;
+j-modal[belongto=j-comboField] j-table {
+  border: 0 none;
+  padding: 0px;
   overflow: hidden;
 }
-j-comboField table th {
+j-modal[belongto=j-comboField] table th {
   background: #fff !important;
   border-bottom: 1px solid #53abe6 !important;
   border-right: 0 !important;
 }
-j-comboField table td {
+j-modal[belongto=j-comboField] table td {
   border-right: 0 !important;
 }
-j-comboField table tr:active > td {
+j-modal[belongto=j-comboField] table tr:active > td {
   background: #fff3a1 !important;
 }
-j-comboField j-pagination {
+j-modal[belongto=j-comboField] j-pagination {
   background: #fff;
   padding: 4px;
   padding-bottom: 0;
 }
-j-comboField j-toolbar {
+j-modal[belongto=j-comboField] j-toolbar {
   background: #fff;
   padding: 4px;
   padding-top: 0;
   border: 0;
 }
-j-comboField j-pagination i {
+j-modal[belongto=j-comboField] j-pagination i {
   position: unset;
 }
-j-comboField i.fa-remove {
+j-modal[belongto=j-comboField] i.fa-remove {
   cursor: pointer;
 }
-j-comboField j-pagination .j-total {
+j-modal[belongto=j-comboField] j-pagination .j-total {
   display: none;
 }
-j-comboField j-table > .j-table-body > table{
+j-modal[belongto=j-comboField] j-table > .j-table-body > table{
   min-width: 209px;
 }
 
-j-comboField j-table > j-toolbar{
+j-modal[belongto=j-comboField] j-table > j-toolbar{
   border-bottom: 0px !important;
 }
 
@@ -325,38 +318,34 @@ j-comboField j-table > j-toolbar{
 j-dateField {
   position: unset;
 }
-j-dateField table {
-  left: 0;
-  position: absolute;
+j-modal[belongto=j-dateField] table, j-datefield table {
   table-layout: fixed;
   width: 210px;
-  background: #fff;
   display: none;
-  border: 1px solid #d9d9d9;
-  top: 25px;
-  padding: 10px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
   .disable-select;
 }
-j-dateField table th {
+j-modal[belongto=j-dateField] table{
+  display: block;
+}
+j-modal[belongto=j-dateField] table th {
   width: 30px;
   padding: 4px;
 }
-j-dateField table tr:last-child th {
+j-modal[belongto=j-dateField] table tr:last-child th {
   border-bottom: 1px solid #53abe6;
 }
-j-dateField table thead tr:first-child th {
+j-modal[belongto=j-dateField] table thead tr:first-child th {
   cursor: pointer;
 }
-j-dateField table td {
+j-modal[belongto=j-dateField] table td {
   text-align: center;
   cursor: pointer;
   padding: 4px;
 }
-j-dateField table td:hover {
+j-modal[belongto=j-dateField] table td:hover {
   background: #d6e8f6;
 }
-j-dateField table td:active {
+j-modal[belongto=j-dateField] table td:active {
   background: #fff3a1;
 }
 
@@ -763,4 +752,32 @@ j-table-form > div {
 .j-table-inplace-form {
   background: #fff !important;
   padding: 0;
+}
+
+/************* j-modal *****************/
+j-modal {
+  position: absolute;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+  left: 0;
+  background: #fff;
+  padding: 10px;
+  font-family: helvetica,arial,verdana,sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+j-modal[title]{
+  padding-top: 30px;
+}
+
+j-modal[title]::after{
+  .border-box;
+  padding: 10px;
+  content:attr(title);
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+  width: 100%;
 }

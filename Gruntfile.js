@@ -19,6 +19,7 @@ module.exports = function (grunt) {
 					'js/attrChange.js',
 					'js/base.js',
 					'js/button.js',
+					'js/modal.js',
 					'js/textField.js',
 					'js/numberField.js',
 					'js/passwordField.js',
@@ -60,7 +61,7 @@ module.exports = function (grunt) {
 			},
 			dist : {
 				files : {
-					'dist/<%= pkg.name %>.min.js' : ['<%= concat.dist.dest %>'],
+					'dist/<%= pkg.name %>.ui.min.js' : ['<%= concat.dist.dest %>'],
 					'dist/jui2.tmp.min.js' : 'dist/jui2.tmp.js',
 					'dist/jui2.lib.min.js' : 'dist/jui2.lib.js'
 				}
@@ -98,7 +99,7 @@ module.exports = function (grunt) {
 					banner : '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> Copyright <%= pkg.author %> */\n'
 				},
 				files : {
-					"dist/jui2.css" : "less/style.less"
+					"dist/css/jui2.css" : "less/style.less"
 				}
 			}
 		},
@@ -108,9 +109,9 @@ module.exports = function (grunt) {
 					'report': 'min'
 				},
 				expand: true,
-				cwd: 'dist/',
+				cwd: 'dist/css/',
 				src: ["jui2.css"],
-				dest: 'dist/',
+				dest: 'dist/css/',
 				ext: '.min.css'
 			}
 		},
@@ -156,7 +157,9 @@ module.exports = function (grunt) {
 			dist : {
 				src: ['js/*.js'],
 				options: {
-					destination: 'dist/doc'
+					destination: 'out',
+					template: "jsdoc/default",
+					configure: "conf.json"
 				}
 			}
 		},
@@ -166,6 +169,93 @@ module.exports = function (grunt) {
 				  // includes files within path
 				  {expand: true, src: 'out/*', dest: 'dist/'}
 				]
+			}
+		},
+		compress: {
+		  main: {
+		    options: {
+		      archive: 'jui.zip' // What you want to call your file
+		    },
+		    files: [
+		      {
+		        src: ['dist/**'], // What should be included in the zip
+		        dest: './'        // Where the zipfile should go
+		      },
+		      {
+		        src: ['dist/out/**'], // What should be included in the zip
+		        dest: './'        // Where the zipfile should go
+		      },
+		      {
+		        src: ['dist/css/**'], // What should be included in the zip
+		        dest: './'        // Where the zipfile should go
+		      },
+		      {
+		        src: ['css/**'], // What should be included in the zip
+		        dest: './dist'        // Where the zipfile should go
+		      },
+		      {
+		        src: ['fonts/**'], // What should be included in the zip
+		        dest: './dist'        // Where the zipfile should go
+		      }
+		    ]
+		  }
+		},
+		'github-release': {
+		  options: {
+		    repository: 'caphodel/jui',
+		    release: {
+		      tag_name: grunt.file.readJSON('package.json').version,
+		      name: grunt.file.readJSON('package.json').version,
+		      body: grunt.file.readJSON('package.json').description
+		    }
+		  },
+		  files: {
+		    src: ['jui.zip']
+		  }
+		},
+		prompt: {
+			'default':{
+		    options: {
+					questions: [
+	          {
+	            config: 'task.runner',
+	            type: 'list',
+	            message: 'Which task would you like to use?',
+	            default: 'compile',
+	            choices: ['compile', 'development', 'production', 'release']
+	          }
+	        ],
+					then: function(results, done) {
+	          if(results['task.runner']=='compile'){
+							grunt.task.run('compile')
+						}
+	          if(results['task.runner']=='development'){
+							grunt.task.run('development')
+						}
+	          if(results['task.runner']=='production'){
+							grunt.task.run('production')
+						}
+	          if(results['task.runner']=='release'){
+							grunt.task.run('release')
+						}
+	        }
+		    }
+			},
+			'release': {
+				options: {
+		      questions: [
+		        {
+		          config: 'github-release.options.auth.user', // set the user to whatever is typed for this question
+		          type: 'input',
+		          message: 'GitHub username:'
+		        },
+		        {
+		          config: 'github-release.options.auth.password', // set the password to whatever is typed for this question
+		          type: 'password',
+		          message: 'GitHub password:'
+		        }
+		      ]
+		    }
 			}
 		}
 	});
@@ -178,7 +268,15 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-ftp-deploy');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-compress');
+	grunt.loadNpmTasks('grunt-prompt');
+	grunt.loadNpmTasks('grunt-github-releaser');
+	grunt.loadNpmTasks('grunt-jsdoc');
 
-	grunt.registerTask('default', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy']);
+	grunt.registerTask('default', ['prompt:default']);
+	grunt.registerTask('compile', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy']);
+	grunt.registerTask('development', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy', 'ftp-deploy:gg_beta_05']);
+	grunt.registerTask('production', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy', 'ftp-deploy']);
+	grunt.registerTask('release', ['prompt:release', 'concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy', 'compress'/*, 'github-release'*/]);
 
 };

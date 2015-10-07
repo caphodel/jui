@@ -14,6 +14,7 @@
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function() {
+		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.comboField);
 
 		var $self = $(this), $table, self = this
 
@@ -33,15 +34,17 @@
 		$table = $self.children('table')
 
 		$table.find('.fa-chevron-left').parent().click(function(){
-			self.prevMonth()
+			self.prevMonth($table)
 		})
 
 		$table.find('.fa-chevron-right').parent().click(function(){
-			self.nextMonth()
+			self.nextMonth($table)
 		})
 
 		$self.bind( "clickout", function(event){
-			if(event.target != $self[0] && $(event.target).parents('j-datefield')[0] != $self[0]){
+			if(event.target != $self[0] && $(event.target).parents('j-datefield')[0] != $self[0] && $(event.target).parents('[belongto=j-dateField]').length == 0){
+				$table.detach().appendTo($self);
+				$('#j-dateField-'+$self.attr('id')).remove();
 				$table.hide();
 			}
 		});
@@ -65,7 +68,9 @@
 				}
 			}
 			$self.val(moment(('00'+elNum).slice(-2)+' '+$table.find('thead tr:first-child th:nth-child(2)').text(), 'DD MMMM YYYY').format($self.attr('format')))
-			$table.hide()
+			$table.detach().appendTo($self);
+			$('#j-dateField-'+$self.attr('id')).remove();
+			$table.hide();
 			/**
 			 * Fires when date selected
 			 * @event select
@@ -89,7 +94,7 @@
 			if($(e.target).parents('table')[0] != $table[0] && e.target != $table[0]){
 				$table.toggle();
 				if($table.is(':visible')){
-					//set top left
+					/*//set top left
 					$table.css('top', parseInt($self.css('height'))+$self.offset().top)
 					.css('left', $self.position().left+$self.parents().filter(function(){
 						//return $(this).scrollLeft()>0
@@ -104,11 +109,13 @@
 						if(parent.eq(0).prop('tagName')!='HTML'){
 							$table.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())
 						}
-					
-					$table.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())
 
-					var z = jui2.findHighestZIndex(), date = [], lastDate, startDate, w = [], i = 0;
-					$table.css('z-index', z == '-Infinity' ? 100 : z);
+					$table.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())*/
+					$('body').append('<j-modal belongto="j-dateField" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-dateField-'+$self.attr('id')+'"></j-modal>');
+					$table.detach().appendTo('#j-dateField-'+$self.attr('id'))
+
+					var date = [], lastDate, startDate, w = [], i = 0;
+					//$table.css('z-index', z == '-Infinity' ? 100 : z);
 
 					//m = moment($self.val(), $self.attr('format'))
 
@@ -135,6 +142,10 @@
 					if(w.length > 0)
 						date.push(w);
 					$table.find('> tbody').empty().append(jui2.tmpl['calendarBody']({date: date}));
+				}
+				else{
+					$table.detach().appendTo($self);
+					$('#j-dateField-'+$self.attr('id')).remove();
 				}
 			}
 		});
@@ -171,10 +182,10 @@
  * @memberof dateField
  * @instance
  */
-	proto.prevMonth = function(){
-		var date = [], lastDate, startDate, w = [], i = 0, $table = $(this).children('table');
-		lastDate = moment($(this).find('table tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').endOf('month').endOf('week')
-		startDate = moment($(this).find('table tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').startOf('month').startOf('week')
+	proto.prevMonth = function(table){
+		var date = [], lastDate, startDate, w = [], i = 0, $table = table;
+		lastDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').endOf('month').endOf('week')
+		startDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').startOf('month').startOf('week')
 		while(startDate.format('DD/MM/YYYY') != lastDate.format('DD/MM/YYYY')){
 			w.push(startDate.format('D'))
 			i++;
@@ -190,7 +201,7 @@
 		if(w.length > 0)
 			date.push(w);
 
-		$table.find('thead tr:first-child th:nth-child(2)').text(moment($(this).find('table tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').format("MMMM YYYY"))
+		$table.find('thead tr:first-child th:nth-child(2)').text(moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').format("MMMM YYYY"))
 		$table.find('> tbody').empty().append(jui2.tmpl['calendarBody']({date: date}));
 	}
 /**
@@ -199,10 +210,10 @@
  * @memberof dateField
  * @instance
  */
-	proto.nextMonth = function(){
-		var date = [], lastDate, startDate, w = [], i = 0, $table = $(this).children('table');
-		lastDate = moment($(this).find('table tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').endOf('month').endOf('week')
-		startDate = moment($(this).find('table tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').startOf('month').startOf('week')
+	proto.nextMonth = function(table){
+		var date = [], lastDate, startDate, w = [], i = 0, $table = table;
+		lastDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').endOf('month').endOf('week')
+		startDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').startOf('month').startOf('week')
 		while(startDate.format('DD/MM/YYYY') != lastDate.format('DD/MM/YYYY')){
 			w.push(startDate.format('D'))
 			i++;
@@ -218,7 +229,7 @@
 		if(w.length > 0)
 			date.push(w);
 
-		$table.find('thead tr:first-child th:nth-child(2)').text(moment($(this).find('table tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').format("MMMM YYYY"))
+		$table.find('thead tr:first-child th:nth-child(2)').text(moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').format("MMMM YYYY"))
 		$table.find('> tbody').empty().append(jui2.tmpl['calendarBody']({date: date}));
 	}
 

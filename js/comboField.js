@@ -35,6 +35,7 @@
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function() {
+		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.comboField);
 
 		this.setAttribute("icon", "fa-angle-down");
 		var table = $(this).children('j-table').detach(), $table, $self = $(this);
@@ -51,8 +52,10 @@
 		if(!$self.attr('pk'))
 			$self.attr('pk', '0');
 
-		$self.bind( "clickout", function(event){
-			if(event.target != $self[0] && $(event.target).parents('j-combofield')[0] != $self[0]){
+		$table.bind( "clickout", function(event){
+			if(event.target != $self[0] && $(event.target).parents('j-combofield')[0] != $self[0] && $(event.target).parents('[belongto=j-comboField]').length == 0){
+				$table.detach().appendTo($div);
+				$('#j-comboField-'+$self.attr('id')).remove();
 				$div.hide();
 			}
 		});
@@ -65,7 +68,7 @@
 				$div.toggle();
 				if($div.css('display') == 'block'){
 
-					$div.css('top', parseInt($self.css('height'))+$self.offset().top)
+					/*$div.css('top', parseInt($self.css('height'))+$self.offset().top)
 					.css('left', 125+$self.position().left+$self.parents().filter(function(){
 						//return $(this).scrollLeft()>0
 						return $(this).hasScrollBar()
@@ -79,24 +82,33 @@
 						if(parent.eq(0).prop('tagName')!='HTML')
 							$div.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())
 
-					$div.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())
+					$div.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())*/
 
+					$('body').append('<j-modal belongto="j-comboField" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-comboField-'+$self.attr('id')+'"></j-modal>');
+					$table.detach().appendTo('#j-comboField-'+$self.attr('id'))
 					$table.show();
 					$self.find('j-toolbar j-textfield').focus();
 					table.find('table').removeAttr('style');
-					var z = jui2.findHighestZIndex()
-					$div.css('z-index', z == '-Infinity' ? 100 : z);
+					/*var z = jui2.findHighestZIndex()
+					$div.css('z-index', z == '-Infinity' ? 100 : z);*/
+				}
+				else{
+					$table.detach().appendTo($div);
+					$('#j-comboField-'+$self.attr('id')).remove();
 				}
 			}
 		})
 
 		$table.delegate('td', 'click', function(e){
 			var $table = $(this).parents('j-table').eq(0), val = $table[0].data[$(this).parent().index()][$self.attr('pk')]
+
 			for(var i in $table[0].data){
 				if($table[0].data[i][$self.attr('pk')]==val){
 					$self.val($table[0].data[i][$self.attr('pk')])
 				}
 			}
+			$table.detach().appendTo($div);
+			$('#j-comboField-'+$self.attr('id')).remove();
 			$div.hide();
 			/**
 			 * Fires when date selected
@@ -147,7 +159,7 @@
 				}
 				else{
 					$(this).attr('data-value', value)
-					var $table = $(this).find('j-table'), i;
+					var $table = $('#j-comboField-'+$(this).attr('id')).find('j-table'), i;
 					for(i in $table[0].data){
 						if($table[0].data[i][$(this).attr('pk')]==value){
 							var data = $table[0].data[i].slice(), c = 0, valText = []
@@ -164,7 +176,7 @@
 				}
 			}
 		});
-		
+
 		if(this.value){
 			var tmpValue = this.value
 			$(this).find('> div > j-table').on('afterdraw', function(){
