@@ -1,7 +1,7 @@
 node_modules/
 .ftppass
 .imdone/
-dist/
+dist/splitfile.py
 index.html
 less.min.js
 package.js
