@@ -168,7 +168,7 @@ module.exports = function (grunt) {
 			dist : {
 				src: ['js/*.js'],
 				options: {
-					destination: 'out',
+					destination: 'doc',
 					template: "jsdoc/default",
 					configure: "conf.json"
 				}
@@ -177,9 +177,9 @@ module.exports = function (grunt) {
 		copy: {
 			main: {
 				files: [
-				  // includes files within path
-				  {expand: true, src: 'out/*', dest: 'dist/'},
-				  {expand: true, src: 'extension/**/*', dest: 'dist/'}
+				  {expand: true, src: 'extension/**/*', dest: 'dist/'},
+				  {expand: true, src: 'jquery.js', dest: 'dist/'},
+					{expand: true, src: 'out/*', dest: 'dist/'}
 				]
 			}
 		},
@@ -239,16 +239,16 @@ module.exports = function (grunt) {
 	        ],
 					then: function(results, done) {
 	          if(results['task.runner']=='compile'){
-							grunt.task.run('compile')
+							grunt.task.run('compile');
 						}
 	          if(results['task.runner']=='development'){
-							grunt.task.run('development')
+							grunt.task.run('development');
 						}
 	          if(results['task.runner']=='production'){
-							grunt.task.run('production')
+							grunt.task.run('production');
 						}
 	          if(results['task.runner']=='release'){
-							grunt.task.run('release')
+							grunt.task.run('release');
 						}
 	        }
 		    }

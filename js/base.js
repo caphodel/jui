@@ -6,16 +6,16 @@
 
 (function($) {
   /** @constructor */
-  var proto = Object.create(HTMLElement.prototype)
+  var proto = Object.create(HTMLElement.prototype);
 
   proto.createdCallback = function(pr) {
 		var ext, $this = $(this);
     this.enabledAttrChange = this.enabledAttrChange || [];
     if(pr){
-      if(pr.extension != undefined){
-				ext = pr.extension
+      if(pr.extension !== undefined){
+				ext = pr.extension;
         if(ext.length>0){
-          for(i in ext){
+          for(var i in ext){
             ext[i](this);
           }
         }
@@ -25,7 +25,7 @@
     if($this.attr('onafterdraw'))
       $this.on('afterdraw', function(e){
         window[$this.attr('onafterdraw')].call(this, e);
-      })
+      });
 
     /*for(i in this.attributes){
 			var attrName = this.attributes[i].nodeName,
@@ -36,14 +36,14 @@
 
     //add id if not set
     if(!$this.attr('id')){
-      $this.attr('id', 'j-'+jui2.random(8, 'aA#'))
+      $this.attr('id', 'j-'+jui2.random(8, 'aA#'));
     }
 
-    this.juiid = jui2.random(8, 'aA#')
+    this.juiid = jui2.random(8, 'aA#');
 
     if(pr)
       if(!pr.extension){
-        pr.extension = []
+        pr.extension = [];
       }
   };
 
@@ -53,7 +53,7 @@
     }),
     proto: proto,
     extension: []
-  }
+  };
 
 }(jQuery))
 ;
