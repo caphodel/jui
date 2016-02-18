@@ -1,7 +1,7 @@
 <thead>
 	<tr>
 		{{#each columns}}
-		<th>{{{this}}}</th>
+		<th><div>{{{this}}}<div class="j-table-sort"></div><j-resize drag="true" direction="horizontal"></j-resize></div></th>
 		{{/each}}
 	</tr>
 </thead>

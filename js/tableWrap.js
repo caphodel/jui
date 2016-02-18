@@ -1,3 +1,4 @@
+
 (function($) {
 
   jui2.ui.tableWrap = function(self) {
@@ -29,3 +30,4 @@
   jui2.ui.table.extension.push(jui2.ui.tableWrap)
 
 }(jQuery))
+;

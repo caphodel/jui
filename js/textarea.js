@@ -1,10 +1,21 @@
+
 (function($){
 
-/*********************** textfield ******************************/
+
+/**
+ * @classdesc textarea custom web component
+ * @class textArea
+ * @example <caption>TexaArea basic usage</caption>
+ * <j-textarea><Textarea/j-textarea>
+ */
+
+/*********************** textarea ******************************/
 
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function(label, type) {
+
+		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.textArea);
 
 		this.iconPosition = 'beforeend';
 
@@ -48,12 +59,25 @@
 			delete this.value;
 		}
 
+		this.enabledAttrChange = $.unique(this.enabledAttrChange.concat(['disabled', 'rows', 'cols']));
+
+		for(i in this.attributes){
+			var attrName = this.attributes[i].nodeName,
+			newVal = this.attributes[i].nodeValue, attr = this.tagName.toLowerCase()+'_'+attrName;
+      if(jui2.attrChange[attr])
+  			jui2.attrChange[attr](this, false, newVal);
+      else if(jui2.attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
+        jui2.attrChange[attrName](this, false, newVal);
+		}
+
 	};
 
 	proto.attributeChangedCallback = function(attrName, oldVal, newVal){
-		var enabledAttrChange = ['disabled'];
-		if(jui2.attrChange[attrName] && enabledAttrChange.indexOf(attrName) > -1)
-			jui2.attrChange[attrName](this, oldVal, newVal);
+		var attr = this.tagName.toLowerCase()+'_'+attrName;
+		if(jui2.attrChange[attr])
+			jui2.attrChange[attr](this, oldVal, newVal);
+    else if(jui2.attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
+      jui2.attrChange[attrName](this, oldVal, newVal);
 	}
 
 	jui2.ui.textArea = {

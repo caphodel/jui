@@ -1,3 +1,4 @@
+
 (function($) {
 
   jui2.ui.toolbarScroll = function(self) {
@@ -96,3 +97,4 @@
   jui2.ui.toolbar.extension.push(jui2.ui.toolbarScroll)
 
 }(jQuery))
+;

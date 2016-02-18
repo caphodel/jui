@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Dataview custom web component
  * @class dataView
@@ -22,46 +23,12 @@
  * @return {object} this
  */
 	proto.generateData = function(){
-		var tbody = $(this).children('div').children('table').children('tbody'), self = this;
+		var $self = $(this), tbody = $self.children('.j-table-body').children('table').eq(0).children('tbody'), self = this, thead = $self.children('.j-table-body').children('table').eq(0).children('thead');
 		tbody.children('tr').remove();
 
-		/*var tmpData = [], self = this
-		if(this.custom){
-			if(this.custom.length > 0){
-				for(z in this.data){
-					tmpData[z] = []
-					for (i in this.data[z]){
-						var cst = this.custom.filter( "[target='"+i+"']" );
-
-						if(cst.length == 0){
-							var attr = this.custom.eq(i).attr('target')
-							if(typeof attr === typeof undefined || attr === false)
-								cst = this.custom.eq(i)
-						}
-
-						if(cst.length > 0 && cst.html().trim() != ''){
-							if(!cst[0].fn)
-								cst[0].fn = eval('fn = '+cst.html().replace(/&lt;/g, '<')
-									.replace(/&gt;/g, '>')
-									.replace(/&amp;/g, '&'));
-							tmpData[z][i] = cst[0].fn(this.data[z]);
-						}
-						else{
-							tmpData[z][i] = this.data[z][i];
-						}
-					}
-				}
-			}
-			else{
-				tmpData = this.data;
-			}
-		}
-		else{
-			tmpData = this.data;
-		}*/
 		this.viewData = this.data
 
-		$(this).triggerHandler('beforedraw')
+		$self.triggerHandler('beforedraw')
 
 		tbody.append(jui2.tmpl['dataViewData']({data: this.viewData}));
 
@@ -76,22 +43,40 @@
 				for(i in this.drop){
 					if(this.drop[i].getAttribute){
 						if(this.drop[i].getAttribute('target') != null)
-							$(this).find('> div > table > tbody > tr > td:nth-child('+(parseInt(this.drop[i].getAttribute('target'))+1)+')').html(this.drop.eq(i).outerHTML())
+							tbody.find(' > tr > td:nth-child('+(parseInt(this.drop[i].getAttribute('target'))+1)+')').html(this.drop.eq(i).outerHTML())
 					}
 				}
 			}
-		var thCount = $(this).find('> div > table > thead > tr > th').length;
+
+		//for combobox
+		if($self.parent().parent().prop('tagName')=='J-COMBOFIELD')
+			$self.find('j-resize').remove()
+
+		var thCount = thead.find(' > tr:first-child > th').last().index() + 1 + (thead.find(' > tr:first-child > th[colspan]').map(function(){
+		  return parseInt($(this).attr('colspan'))-1
+		}).get()[0]||0);
 
 		if(thCount > 0)
-			$(this).find('> div > table > tbody > tr > td:nth-child(n+'+(thCount+1)+')').remove();
+			tbody.find(' > tr > td:nth-child(n+'+(thCount+1)+')').remove();
 
-		$(this).find('> div > table th:empty').each(function(i, val){
-			tbody.find('> tr > td:nth-child('+(parseInt($(val).index())+1)+')').hide()
-			$(val).hide()
+		//remarks from :visible
+		thCount = thead.find(' > tr:first-child > th').last().index() + 1 + (thead.find(' > tr:first-child > th[colspan]').map(function(){
+		  return parseInt($(this).attr('colspan'))-1
+		}).get()[0]||0);
+
+		if(thCount > 0)
+			tbody.find(' > tr > td:nth-child(n+'+(thCount+1)+')').remove();
+
+		thead.find(' > tr:first-child > th').filter(function(){
+			return $(this).text().trim() == ''
+		}).each(function(i, val){
+			val = $(val)
+			tbody.find(' > tr > td:nth-child('+(parseInt(val.index())+1)+')').hide().attr('hide','true')
+			val.hide()
 		})
 
-		$(this).triggerHandler('self.afterdraw')
-		$(this).triggerHandler('afterdraw.height')
+		$self.triggerHandler('self.afterdraw')
+		$self.triggerHandler('afterdraw.height')
 		/**
 		 * Fire after data has been drawn
 		 * @event afterdraw
@@ -110,65 +95,38 @@
 		})
 		</script>
 		 */
+		/*$(this).find('>.j-table-body > table > thead > tr > th').each(function(i, val){
+			var $el = $(val)
+			$el.children().outerWidth($el.width());
+		})*/
+
 		if(this.afterdrawCheck==false && this.firstDraw == true){
 			this.firstDraw = false
 			this.afterdrawIntervalCount = 0, this.afterdrawInterval = setInterval(function(){
-				var events = jQuery._data( self, "events")
+				var events = jQuery._data( self, "events"), afterdrawLength = 1
+				if($self.prop('tagName')=='J-DATAVIEW')
+					afterdrawLength = 0;
 				if(events != undefined)
-					if(events.afterdraw.length > 1){
-						self.afterdrawCheck = true;
-						$(self).triggerHandler('afterdraw')
+					if(events.afterdraw)
+						if(events.afterdraw.length > afterdrawLength){
+							self.afterdrawCheck = true;
+							$self.triggerHandler('afterdraw')
 
-						if(self.getAttribute('onafterdraw')){
-							if(typeof window[self.getAttribute('onafterdraw')] == 'function')
-								window[self.getAttribute('onafterdraw')]()
+							if(self.getAttribute('onafterdraw')){
+								if(typeof window[self.getAttribute('onafterdraw')] == 'function')
+									window[self.getAttribute('onafterdraw')]()
+							}
+							clearInterval(self.afterdrawInterval);
 						}
-						clearInterval(self.afterdrawInterval);
-					}
-				if(!$.contains(document.documentElement, $(self).get(0))){
+				if(!$.contains(document.documentElement, $self.get(0))){
 					clearInterval(self.afterdrawInterval);
 				}
 			}, 250)
 		}
 		else{
 			clearInterval(this.afterdrawInterval)
-			$(self).triggerHandler('afterdraw')
+			$self.triggerHandler('afterdraw')
 		}
-		/*if(this.afterdrawCheck == false){
-			var events = jQuery._data( self, "events")
-			if(events!=undefined){
-				if(events.afterdraw!=undefined)
-					if(events.afterdraw.length > 1){
-						this.afterdrawCheck = true;
-					}
-			}
-			if(this.afterdrawCheck == false){
-				var afterdrawIntervalCount = 0, afterdrawInterval = setInterval(function(){
-					if(afterdrawIntervalCount==3)
-						clearInterval(afterdrawInterval)
-					var events = jQuery._data( self, "events")
-					if(events != undefined)
-						if(events.afterdraw.length > 1 && !self.afterdrawCheck){
-							self.afterdrawCheck = true;
-							$(self).triggerHandler('afterdraw')
-
-							if(self.getAttribute('onafterdraw')){
-								if(typeof window[self.getAttribute('onafterdraw')] == 'function')
-									window[self.getAttribute('onafterdraw')]()
-							}
-						}
-					afterdrawIntervalCount++
-				}, 250)
-			}
-		}
-		if(this.afterdrawCheck){
-			$(this).triggerHandler('afterdraw')
-
-			if(this.getAttribute('onafterdraw')){
-				if(typeof window[this.getAttribute('onafterdraw')] == 'function')
-					window[this.getAttribute('onafterdraw')]()
-			}
-		}*/
 
 		return this;
 	}
@@ -179,16 +137,20 @@
 
 		this.afterdrawCheck = false;
 		this.firstDraw = true;
-		var data;
+		var $self = $(this), data/*, custom = $(this).children('j-custom').detach()*/;
 
-		if(this.innerHTML.trim() == '')
+		var text = $('<div>'+this.innerHTML+'</div>');
+		text.children().remove()
+
+		if(text[0].innerHTML.trim().replace(/<(.|\n)*?>(.|\n)*?<\/(.|\n)*?>/ig, '') == "")
 			data = data || [];
 		else
-			data = data || JSON.parse(this.innerHTML.replace(/<(.|\n)*?>(.|\n)*?<\/(.|\n)*?>/ig, ''));
+			data = data || JSON.parse(text[0].innerHTML.replace(/<(.|\n)*?>(.|\n)*?<\/(.|\n)*?>/ig, ''));
+
+		text.remove();
+
 		if(!this.data)
 			this.data = data;
-
-		//this.generateData();
 
 		this.innerHTML = jui2.tmpl['dataView']();
 
@@ -232,3 +194,4 @@
 	}
 
 }(jQuery))
+;

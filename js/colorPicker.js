@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Color picker custom web component
  * @class colorPicker
@@ -16,11 +17,14 @@
 
 		this.setAttribute("icon", "fa-square");
 
-		jui2.ui.textField.proto.createdCallback.call(this, 'Color Picker')
+		jui2.ui.textField.proto.createdCallback.call(this, '')
 
 		$self.bind( "clickout", function(e){
-			if($(e.target).parents('j-colorPicker').length == 0 && $(e.target).parents('[belongto=j-colorPicker]').length == 0)
+			if($(e.target).parents('j-colorPicker').length == 0 && $(e.target).parents('[belongto=j-colorPicker]').length == 0){
 				$('#j-colorPicker-'+$self.attr('id')).remove();
+				if($(e.target).parents('j-colorpicker, [belongto=j-colorPicker]').length == 0 && $(e.target).parents('j-colorpicker')[0] != $self[0])
+					$('[belongto=j-colorPicker]').remove()
+			}
 		});
 
 		$self.click(function(e){
@@ -114,6 +118,15 @@
 					setColor(e);
 				});
 				$('body').append('<j-modal belongto="j-colorPicker" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-colorPicker-'+$self.attr('id')+'"></j-modal>');
+				setTimeout(function(){
+					if($('#j-colorPicker-'+$self.attr('id')).touchBottom()){
+						$('#j-colorPicker-'+$self.attr('id')).attr('snappos', 'bottomleft to topleft')
+						setTimeout(function(){
+							if($('#j-colorPicker-'+id).touchTop())
+								$('#j-colorPicker-'+id).attr('snappos', 'topleft to bottomleft')
+						}, 250);
+					}
+				}, 250);
 				$colors.parent().detach().appendTo('#j-colorPicker-'+$self.attr('id'))
 			}
 		})
@@ -134,3 +147,4 @@
 	}
 
 }(jQuery))
+;

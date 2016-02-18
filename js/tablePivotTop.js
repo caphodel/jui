@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Pivot row extension for table widget
  * @class pivotTop @extension table
@@ -103,3 +104,4 @@
 	}
 
 }(jQuery))
+;

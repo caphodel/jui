@@ -1,3 +1,4 @@
+
 /**
  * @classdesc base for all custom web component
  * @class base
@@ -7,15 +8,23 @@
   /** @constructor */
   var proto = Object.create(HTMLElement.prototype)
 
-  proto.createdCallback = function(proto) {
+  proto.createdCallback = function(pr) {
+		var ext, $this = $(this);
     this.enabledAttrChange = this.enabledAttrChange || [];
-    for(i in proto.extension){
-      proto.extension[i](this);
+    if(pr){
+      if(pr.extension != undefined){
+				ext = pr.extension
+        if(ext.length>0){
+          for(i in ext){
+            ext[i](this);
+          }
+        }
+      }
     }
 
-    if($(this).attr('onafterdraw'))
-      $(this).on('afterdraw', function(e){
-        window[$(this).attr('onafterdraw')].call(this, e);
+    if($this.attr('onafterdraw'))
+      $this.on('afterdraw', function(e){
+        window[$this.attr('onafterdraw')].call(this, e);
       })
 
     /*for(i in this.attributes){
@@ -26,13 +35,16 @@
 		}*/
 
     //add id if not set
-    if(!$(this).attr('id')){
-      $(this).attr('id', 'j-'+jui2.random(8, 'aA#'))
+    if(!$this.attr('id')){
+      $this.attr('id', 'j-'+jui2.random(8, 'aA#'))
     }
 
-    if(!proto.extension){
-      proto.extension = []
-    }
+    this.juiid = jui2.random(8, 'aA#')
+
+    if(pr)
+      if(!pr.extension){
+        pr.extension = []
+      }
   };
 
   jui2.ui.base = {
@@ -44,3 +56,4 @@
   }
 
 }(jQuery))
+;

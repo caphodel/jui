@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Extension for loading data from server/ajax
  * @class loader @extension table
@@ -19,23 +20,43 @@
 		$parent.attr('disabled', 'disabled');
 		var param = this.param, self = this;
 		param.sEcho++
-		$.getJSON(this.getAttribute('src'), param).done(function(data){
-			if(param.sEcho==data.sEcho){
-				param.totalPage = Math.ceil(param.iTotalRecords/param.iDisplayLength)
-				jui2.clearNullFromJson(data.aaData);
-				target.data = data.aaData;
-				self.targetGenerateData.call(target);
-				$(target).find('> div > table > thead > tr > th').filter(function(i, val){
-					return val.innerHTML === '';
-				}).hide().each(function(i,val){
-					$(target).find('> div > table > tbody > tr > td:nth-child('+(parseInt($(val).index())+1)+')').hide()
-				});
-				param.iTotalRecords = data.iTotalRecords
-				self.afterDrawCall();
-			}
-		}).always(function(){
-			$parent.removeAttr('disabled');
-		})
+		param.rand = jui2.random(8, 'aA#')
+		if(this.getAttribute('src'))
+			$.getJSON(this.getAttribute('src'), param).done(function(data){
+				if(param.sEcho==data.sEcho){
+					param.totalPage = Math.ceil(param.iTotalRecords/param.iDisplayLength)
+					jui2.clearNullFromJson(data.aaData);
+					target.data = data.aaData
+					self.targetGenerateData.call(target);
+					$(target).find('> div > table > thead > tr > th').filter(function(i, val){
+						return val.innerHTML === '';
+					}).hide().each(function(i,val){
+						$(target).find('> div > table > tbody > tr > td:nth-child('+(parseInt($(val).index())+1)+')').hide()
+					});
+					param.iTotalRecords = data.iTotalRecords
+					self.afterDrawCall();
+				}
+			}).always(function(){
+				$parent.removeAttr('disabled');
+			})
+		else if(this.getAttribute('fn'))
+			window[this.getAttribute('fn')](param, function(data){
+				if(param.sEcho==data.sEcho){
+					param.totalPage = Math.ceil(param.iTotalRecords/param.iDisplayLength)
+					jui2.clearNullFromJson(data.aaData);
+					target.data = data.aaData;
+					self.targetGenerateData.call(target);
+					$(target).find('> div > table > thead > tr > th').filter(function(i, val){
+						return val.innerHTML === '';
+					}).hide().each(function(i,val){
+						$(target).find('> div > table > tbody > tr > td:nth-child('+(parseInt($(val).index())+1)+')').hide()
+					});
+					param.iTotalRecords = data.iTotalRecords
+					self.afterDrawCall();
+				}
+			}, function(){
+				$parent.removeAttr('disabled');
+			})
 	}
 
 	proto.setParam = function(name, value){
@@ -43,8 +64,10 @@
 	}
 
 	proto.createdCallback = function(label, type) {
+		//jui2.ui.base.proto.createdCallback.call(this, jui2.ui.loader);
 
 		var self = this;
+		this.param2 = 'asd'
 
 		this.afterDrawMethods = {};
 
@@ -52,9 +75,9 @@
 			sEcho: -1,
 			iDisplayLength: self.getAttribute('size') || 10,
 			iDisplayStart: 0,
-			iSortCol_0: 0,
+			iSortCol: 0,
 			sSearch: '',
-			sSortDir_0: ''
+			sSortDir: 'desc'
 		}
 
 		if(this.getAttribute('type') == 'j-table'){
@@ -80,12 +103,6 @@
 		})
 	}
 
-	proto.attributeChangedCallback = function(attrName, oldVal, newVal){
-		var enabledAttrChange = [];
-		if(jui2.attrChange[attrName] && enabledAttrChange.indexOf(attrName) > -1)
-			jui2.attrChange[attrName](this, oldVal, newVal);
-	}
-
 	jui2.ui.loader = {
 		widget: document.registerElement('j-loader',  {
 			prototype: proto
@@ -94,3 +111,4 @@
 	}
 
 }(jQuery))
+;

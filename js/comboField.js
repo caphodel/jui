@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Combofield custom web component
  * @class comboField
@@ -36,17 +37,17 @@
 
 	proto.createdCallback = function() {
 		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.comboField);
+		var id = this.juiid
 
 		this.setAttribute("icon", "fa-angle-down");
-		var table = $(this).children('j-table').detach(), $table, $self = $(this);
+		var table = $(this).children('j-table').detach(), $table, $self = $(this), $div;
 
 		this.noInherit = ['value'];
-		jui2.ui.textField.proto.createdCallback.call(this, 'Combofield')
+		jui2.ui.textField.proto.createdCallback.call(this, '')
 
-		$(this).append(table);
-		$(this).children('j-table').wrap('<div></div>')
+		$self.append(table).children('j-table').wrap('<div></div>')
 
-		var $div = $(this).children('div')
+		$div = $(this).children('div')
 		$table = $(this).find('j-table')
 
 		if(!$self.attr('pk'))
@@ -55,46 +56,38 @@
 		$table.bind( "clickout", function(event){
 			if(event.target != $self[0] && $(event.target).parents('j-combofield')[0] != $self[0] && $(event.target).parents('[belongto=j-comboField]').length == 0){
 				$table.detach().appendTo($div);
-				$('#j-comboField-'+$self.attr('id')).remove();
+				$('#j-comboField-'+id).remove();
 				$div.hide();
+				//if($(event.target).parents('j-combofield, [belongto=j-comboField]').length == 0 && $(event.target).parents('j-combofield')[0] != $self[0])
+					//$('[belongto=j-comboField]').remove()
+				/*if($(event.target).parents('j-combofield, [belongto=j-comboField]').length == 0)
+					$('[belongto=j-comboField]').remove()*/
 			}
 		});
 
 		$self.delegate($self.children().not('j-table'), 'click', function(e){
-			if($(e.target).hasClass('fa-remove')){
+			var $eTarget = $(e.target);
+			if($table.find('> j-pagination > .j-itemPerPage').length > 0){
+				$table.find('> j-pagination > .j-itemPerPage').remove();
+				$table.find('> j-pagination > span:contains(items per page)').remove();
+			}
+			if($eTarget.hasClass('fa-remove')){
 				$self.val('')
 			}
-			else if($(e.target).parents('div:not(j-table > div)')[0] != $div[0] && e.target != $div[0]){
+			else if($eTarget.parents('div:not(j-table > div)')[0] != $div[0] && e.target != $div[0]){
 				$div.toggle();
 				if($div.css('display') == 'block'){
-
-					/*$div.css('top', parseInt($self.css('height'))+$self.offset().top)
-					.css('left', 125+$self.position().left+$self.parents().filter(function(){
-						//return $(this).scrollLeft()>0
-						return $(this).hasScrollBar()
-					}).scrollLeft());
-
-					var parent = $self.parents().filter(function(){
-						return $(this).hasScrollBar()
-					})
-
-					if(parent.length > 0)
-						if(parent.eq(0).prop('tagName')!='HTML')
-							$div.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())
-
-					$div.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())*/
-
-					$('body').append('<j-modal belongto="j-comboField" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-comboField-'+$self.attr('id')+'"></j-modal>');
-					$table.detach().appendTo('#j-comboField-'+$self.attr('id'))
+					if($('#j-comboField-'+id).length==0)
+						$('body').append('<j-modal belongto="j-comboField" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-comboField-'+id+'"></j-modal>');
+					$table[0].generateData();
+					$table.detach().appendTo('#j-comboField-'+id)
 					$table.show();
 					$self.find('j-toolbar j-textfield').focus();
 					table.find('table').removeAttr('style');
-					/*var z = jui2.findHighestZIndex()
-					$div.css('z-index', z == '-Infinity' ? 100 : z);*/
 				}
 				else{
 					$table.detach().appendTo($div);
-					$('#j-comboField-'+$self.attr('id')).remove();
+					$('#j-comboField-'+id).remove();
 				}
 			}
 		})
@@ -108,7 +101,7 @@
 				}
 			}
 			$table.detach().appendTo($div);
-			$('#j-comboField-'+$self.attr('id')).remove();
+			$('#j-comboField-'+id).remove();
 			$div.hide();
 			/**
 			 * Fires when date selected
@@ -124,7 +117,7 @@
 			 * })
 			 * </script>
 			 */
-			$(this).triggerHandler('select', [$self.val()]);
+			$self.triggerHandler('select', [$self.val()]);
 			$table.find('tr').removeClass('j-active');
 		})
 
@@ -132,18 +125,32 @@
 
 		$self.find('j-toolbar j-textfield').on('keydown', function(e){
 			if(e.keyCode == 13){
-				var $loader = $self.find('j-table j-loader')
+				var $loader = $table.find('j-loader')
 				if($loader.length > 0){
-					$loader[0].param.sSearch = $self.find('j-toolbar j-textfield').val()
-					$('j-combofield j-table')[0].generateData();
+					$loader[0].param.sSearch = $table.find('j-toolbar j-textfield').val()
+					$table[0].generateData();
+				}
+				else{
+					$('#j-comboField-'+id+' tbody tr').show()
+					.not(':contains('+$table.find('j-toolbar j-textfield').val()+')').hide()
 				}
 			}
 		})
 
-		var defValue = $(this).attr('value') || ''
+		//delete value when captured backspace
+		$self.on('keydown', function(e){
+			if(e.keyCode == 8){
+				$self.val('');
+				$table.detach().appendTo($div);
+				$('#j-comboField-'+id).remove();
+				$div.hide();
+			}
+		})
+
+		var tmpValue = $(this).attr('value') || (this.value || '')
 		$(this).removeAttr('value')
 
-		jui2.keycodes.bind($(this).children('input'), "")
+		jui2.keycodes.bind($(this).children('input'), "tab")
 
 		/* getter/setter */
 		Object.defineProperty(this.__proto__, 'value', {
@@ -152,37 +159,40 @@
 				return $(this).attr('data-value');
 			},
 			set: function(value){
+				var $this = $(this);
 				if(value==''){
-					$(this).removeAttr('data-value');
-					$(this).children('input')[0].value = '';
+					$this.removeAttr('data-value');
+					$this.children('input')[0].value = '';
 					this.setAttribute("icon", "fa-angle-down")
 				}
 				else{
-					$(this).attr('data-value', value)
-					var $table = $('#j-comboField-'+$(this).attr('id')).find('j-table'), i;
+					$this.attr('data-value', value)
+					var $table = $('#j-comboField-'+$(this)[0].juiid).find('j-table'), i;
+					if(!$table[0]){
+						$table = $this.find('> div > j-table')
+					}
+
 					for(i in $table[0].data){
 						if($table[0].data[i][$(this).attr('pk')]==value){
 							var data = $table[0].data[i].slice(), c = 0, valText = []
-							$table.find('thead th').filter(function(){
+							$table.find('> .j-table-body > table > thead > tr > th').filter(function(){
 								return $(this).css('display') != 'none'
 							}).each(function(i, val){
-								valText.push(data[$(val).index()])
+								valText[valText.length] = data[$(val).index()]
 							})
-							$(this).children('input')[0].value = valText.join(', ');
+							$this.children('input')[0].value = valText.join(', ');
 						}
 					}
-					if($(this).children('input')[0].value.trim()!='')
+					if($this.children('input')[0].value.trim()!='')
 						this.setAttribute("icon", "fa-remove")
 				}
 			}
 		});
 
-		if(this.value){
-			var tmpValue = this.value
+		if(tmpValue){
 			$(this).find('> div > j-table').on('afterdraw', function(){
 				$self.val(tmpValue)
 			})
-			delete this.value;
 		}
 		delete this.value;
 
@@ -207,9 +217,9 @@
 	}
 
 	proto.attributeChangedCallback = function(attrName, oldVal, newVal){
-		var enabledAttrChange = ['disabled', 'icon'];
-		if(jui2.attrChange[attrName] && enabledAttrChange.indexOf(attrName) > -1)
-			jui2.attrChange[attrName](this, oldVal, newVal);
+		var enabledAttrChange = ['disabled', 'icon'], attrChange = jui2.attrChange;
+		if(attrChange[attrName] && enabledAttrChange.indexOf(attrName) > -1)
+			attrChange[attrName](this, oldVal, newVal);
 	}
 
 	jui2.ui.comboField = {
@@ -220,3 +230,4 @@
 	}
 
 }(jQuery))
+;

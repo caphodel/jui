@@ -7,137 +7,533 @@ var jui2 = jui2 || {
 	lang: {}
 };
 
-jui2.lang = jui2.lang || {};
-/**
- * @namespace ui
- * @memberof jui2
- */
-jui2.ui = jui2.ui || {};
-/**
- * Create random string
- * @memberof jui2
- * @param  {Number} length String length
- * @param  {String} chars  String output format combination, Combination: 'a' for lowercase alphabet, 'A' for uppercase alphabet, '#' for numeric and '!' for non alphanumeric
- * @return {String}        Random string
- * @example
- * var randomString = jui2.random(8, 'aA#'); //will return random string containing uppercase, lowercase and numeric string
- */
-jui2.random = function (length, chars) {
-	var result = '', mask = '', text, i;
+(function($) {
 
-	text = {
-		'a': 'abcdefghijklmnopqrstuvwxyz',
-		'A': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-		'#': '0123456789',
-		'!': '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\'
-	};
-
-	for (i = chars.length; i--;)
-		mask+=text[chars[i]]
-
-	for (i = length; i > 0; --i)
-		result += mask[Math.round(Math.random() * (mask.length - 1))];
-	return result;
-}
-/**
- * return highest z-index
- * @memberof jui2
- * @return {number} Highest z-index
- */
-jui2.findHighestZIndex = function(){
-	return Math.max.apply(null,$.map($('body > *'), function(e,n){
-	   if($(e).css('position')=='absolute')
-			return parseInt($(e).css('z-index'))||1 ;
-	   })
-	);
-}
-/**
- * Clear null value from JSON object and change it to empty string
- * @memberof jui2
- * @param  {object} json JSON object
- * @return {object}      JSON object
- */
-jui2.clearNullFromJson = function(json){
-	jui2.iterateJson(json, function(json){
-		if(typeof json == 'object')
-			for (var data in json) {
-				if(!json[data])
-					if(json[data]!=0)
-						json[data] = ''
-			}
-	})
-}
-/**
- * Iterating a json object
- * @memberof jui2
- * @param  {object}   json JSON object
- * @param  {Function} fn   function to execute in every JSON object items
- * @example
- * jui2.iterateJson({
- * 	a: 1,
- *  b: 2
- * }, function(obj){
- * 	console.log(obj)
- * }) // will print 1 then 2
- */
-jui2.iterateJson = function(json, fn){
-	for (var data in json) {
-		fn(json[data])
-		typeof json[data] == 'object' &&
-			jui2.iterateJson(json[data], fn)
-	}
-}
-/**
- * Get HTML string of element
- * @return {String}   Outer HTML string of an element
- */
-jQuery.fn.outerHTML = function(s) {
-    return s
-        ? this.before(s).remove()
-        : jQuery("<p>").append(this.eq(0).clone()).html();
-};
-
-jQuery.fn.getValues = function(){
-	var values = {}
-	$(this).find('j-textfield, j-textarea, j-passwordfield, j-combofield, j-datefield, j-numberfield').filter(function(){
-    return ($(this).attr('name')||$(this).attr('id')) !== undefined
-  }).each(function(i, val){
-    var id = $(val).attr('name')||$(val).attr('id')
-		values[id] = $(val).val()
-	})
-	return values;
-}
-/*
-Array.prototype.unique = function() {
-    var a = this.concat();
-    for(var i=0; i<a.length; ++i) {
-        for(var j=i+1; j<a.length; ++j) {
-            if(a[i] === a[j])
-                a.splice(j--, 1);
-        }
+	Array.prototype._reduce = function(callback /*, initialValue*/) {
+    'use strict';
+    if (this == null) {
+      throw new TypeError('Array.prototype.reduce called on null or undefined');
     }
 
-    return a;
-};*/
+    if (typeof callback !== 'function') {
+			return;
+      //throw new TypeError(typeof callback + ' is not a function');
+    }
+    var t = Object(this), len = t.length >>> 0, k = 0, value;
+    if (arguments.length == 2) {
+      value = arguments[1];
+    } else {
+      while (k < len && !(k in t)) {
+        k++;
+      }
+      if (k >= len) {
+        throw new TypeError('Reduce of empty array with no initial value');
+      }
+      value = t[k++];
+    }
+    for (; k < len; k++) {
+      if (k in t) {
+        value = callback(value, t[k], k, t);
+      }
+    }
+    return value;
+  };
 
-jQuery.fn.justtext = function() {
+	jui2.path = './dist/';
 
-	return $(this).clone()
-	        .children()
-	        .remove()
-	        .end()
-	        .text();
+	jui2.loadExtension = function(){
+		$.getJSON(jui2.path+'extension/').done(function(data){
+			for(i in data){
+				data[i] = jui2.path+'extension/'+data[i]+'/'+data[i]+'.js'
+			}
+			head.load(data)
+		})
+	}
 
-};
+	jui2.lang = jui2.lang || {};
+	/**
+	 * @namespace ui
+	 * @memberof jui2
+	 */
+	jui2.ui = jui2.ui || {};
+	/**
+	 * Create random string
+	 * @memberof jui2
+	 * @param  {Number} length String length
+	 * @param  {String} chars  String output format combination, Combination: 'a' for lowercase alphabet, 'A' for uppercase alphabet, '#' for numeric and '!' for non alphanumeric
+	 * @return {String}        Random string
+	 * @example
+	 * var randomString = jui2.random(8, 'aA#'); //will return random string containing uppercase, lowercase and numeric string
+	 */
+	jui2.random = function (length, chars) {
+		var result = '', mask = '', text, i;
 
-(function($) {
+		text = {
+			'a': 'abcdefghijklmnopqrstuvwxyz',
+			'A': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+			'#': '0123456789',
+			'!': '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\'
+		};
+
+		for (i = chars.length; i--;)
+			mask+=text[chars[i]]
+
+		for (i = length; i > 0; --i)
+			result += mask[Math.round(Math.random() * (mask.length - 1))];
+		return result;
+	};
+	/**
+	 * return highest z-index
+	 * @memberof jui2
+	 * @return {number} Highest z-index
+	 */
+	jui2.findHighestZIndex = function(){
+		return Math.max.apply(null,$.map($('body > *'), function(e,n){
+		   if($(e).css('position')=='absolute')
+				return parseInt($(e).css('z-index'))||1 ;
+		   })
+		);
+	}
+	/**
+	 * Clear null value from JSON object and change it to empty string
+	 * @memberof jui2
+	 * @param  {object} json JSON object
+	 * @return {object}      JSON object
+	 */
+	jui2.clearNullFromJson = function(json){
+		jui2.iterateJson(json, function(json){
+			if(typeof json == 'object')
+				for (var data in json) {
+					if(!json[data])
+						if(json[data]!=0)
+							json[data] = ''
+				}
+		})
+	};
+	/**
+	 * Iterating a json object
+	 * @memberof jui2
+	 * @param  {object}   json JSON object
+	 * @param  {Function} fn   function to execute in every JSON object items
+	 * @example
+	 * jui2.iterateJson({
+	 * 	a: 1,
+	 *  b: 2
+	 * }, function(obj){
+	 * 	console.log(obj)
+	 * }) // will print 1 then 2
+	 */
+	jui2.iterateJson = function(json, fn){
+		for (var data in json) {
+			fn(json[data])
+			typeof json[data] == 'object' &&
+				jui2.iterateJson(json[data], fn)
+		}
+	};
+
+	/*old code*/
+	$.fn.jui2Serialize = function(){
+		value = {};
+		this.find('[role=textField],[role=timeField],[role=uploadField],[role=textArea],[role=dateField],[role=comboField],[role=datePicker],[role=passwordField],[role=radioField]').each(function(){
+			var el = $(this)
+			var role = el.attr('role'), id = el.attr('name')||el.attr('id'), text = '';
+
+			if (role=='textArea')
+				text = $(el.find('iframe')[0].contentWindow.document.body).html().trim()
+
+			value[id] =
+				role=='textArea' && (text != '<br>' && jui2.escapeHtmlEntities(text.replace('&#x2010;', '-').replace('&#x2013;', '-').replace('&#x9;', '').replace(/&nbsp;/g,' ').replace(/\s\s+/g, ' ').replace(/(^<br>|<br>$)/g,'')) != '' && jui2.escapeHtmlEntities(jui2.cleanWordPaste(text).replace('&#x2010;', '-').replace('&#x2013;', '-').replace('&#x9;', '').replace(/&nbsp;/g,' ').replace(/\s\s+/g, ' ').replace(/(^<br>|<br>$)/g,'')))
+				|| role=='comboField' &&
+					el.find('input[type=hidden]').val()
+				|| role=='radioField' &&
+					el.find('input:checked').val()
+				|| role=='timeField' &&
+					el.find('input').eq(0).val()+':'+el.find('input').eq(1).val()
+				|| el.find('input').val()
+
+			if(role=='textArea' && value[id]=='<br>')
+				value[id] = ''
+
+			if(role=='textArea'){
+				if(value[id])
+					value[id] = jui2.escapeHtmlEntities((he.encode(value[id], {
+						'allowUnsafeSymbols': false
+					})).replace('&#x2010;', '-').replace('&#x2013;', '-').replace('&#x9;', '').replace(/&nbsp;/g,' ')
+					.replace(/\s\s+/g, ' '));
+			}
+
+		});
+		var i = 0
+		this.find('j-datefield, j-combofield').each(function(i, val){
+			var el = $(val), id = el.attr('name')||el.attr('id')
+			value[id] = el.val();
+		})
+
+		value = $.extend(value, $(this).getValues())
+		return value;
+	};
+
+	/**
+	 * Count the size of overlapped area
+	 * @param  {jQuery} selector jQuery selector, object or HTMLElement
+	 * @return {object}          JSON object containing width and height of overlapped area
+	 */
+	$.fn.overlappedSize = function(selector){
+		var el = $(selector),
+		offset1 = this.offset(),
+		offset2 = el.offset(),
+		w1 = this.outerWidth(),
+		w2 = el.outerWidth(),
+		h1 = this.outerHeight(),
+		h2 = el.outerHeight(),
+		width = Math.max(Math.min(offset1.left+w1, offset2.left+w2) - Math.max(offset1.left, offset2.left), 0),
+		height = Math.max(Math.min(offset1.top+h1, offset2.top+h2) - Math.max(offset1.top, offset2.top), 0)
+
+		return {
+			width: width,
+			height: height
+		}
+	}
+
+	/**
+	 * Calculate distance between 2 points
+	 * @param  {object} point1 x and y of point ex. {x: 10, y: 10}
+	 * @param  {object} point2 x and y of point ex. {x: 10, y: 10}
+	 * @return {number}        distance
+	 */
+	$.calcDistance = function(point1, point2){
+		var xs = 0, ys = 0;
+
+		xs = point2.x - point1.x;
+		xs = xs * xs;
+
+		ys = point2.y - point1.y;
+		ys = ys * ys;
+
+		return Math.sqrt( xs + ys );
+	}
+
+	$.fn.centerPoint = function(){
+		var xy1 = this.offset()
+
+		return {
+			x: xy1.left + this.outerWidth()/2,
+			y: xy1.top + this.outerHeight()/2
+		}
+	}
+
+	/**
+	 * Get nearest distance of 2 elements
+	 * @param  {jQuery} selector jQuery selector, object or HTMLElement
+	 * @return {integer}          Distance of nearest distance in pixel
+	 */
+	$.fn.nearestDistance = function(selector){
+		var offset1 = this.offset(), topLeft1 = {x: offset1.left, y: offset1.top},
+		bottomLeft1 = {x: offset1.left, y: offset1.top+this.outerHeight()},
+		topRight1 = {x: offset1.left+this.outerWidth(), y: offset1.top},
+		bottomRight1 = {x: offset1.left+this.outerWidth(), y: offset1.top+this.outerHeight()},
+		bottom1 = offset1.top+this.outerHeight(),
+		right1 = offset1.left+this.outerWidth()
+		el = $(selector),
+		offset2 = el.offset(), topLeft2 = {x: offset2.left, y: offset2.top},
+		bottomLeft2 = {x: offset2.left, y: offset2.top+el.outerHeight()},
+		topRight2 = {x: offset2.left+el.outerWidth(), y: offset2.top},
+		bottomRight2 = {x: offset2.left+el.outerWidth(), y: offset2.top+el.outerHeight()},
+		bottom2 = offset2.top+el.outerHeight(),
+		right2 = offset2.left+el.outerWidth(), distance = []
+
+		if(right1 > offset2.left && !(offset1.left > right2)){
+			if(bottom1 < offset2.top)
+				distance.push(offset2.top - bottom1)
+			if(bottom2 < offset1.top)
+				distance.push(offset1.top - bottom2)
+		}
+
+		if(bottom1 > offset2.top && !(offset1.top > bottom2)){
+			if(right1 < offset2.left)
+				distance.push(offset2.left - right1)
+			if(right2 < offset1.left)
+				distance.push(offset1.left - right2)
+		}
+
+		if(bottom1 < offset2.top){
+			distance.push($.calcDistance(bottomRight1, topLeft2))
+			distance.push($.calcDistance(bottomRight1, topRight2))
+			distance.push($.calcDistance(bottomLeft1, topLeft2))
+			distance.push($.calcDistance(bottomLeft1, topRight2))
+		}
+		else if(bottom2 < offset1.top){
+			distance.push($.calcDistance(bottomRight2, topLeft1))
+			distance.push($.calcDistance(bottomRight2, topRight1))
+			distance.push($.calcDistance(bottomLeft2, topLeft1))
+			distance.push($.calcDistance(bottomLeft2, topRight1))
+		}
+
+		if(right1 < offset2.left){
+			distance.push($.calcDistance(bottomRight1, topLeft2))
+			distance.push($.calcDistance(bottomRight1, bottomLeft2))
+			distance.push($.calcDistance(topRight1, topLeft2))
+			distance.push($.calcDistance(topRight1, bottomLeft2))
+		}
+		else if(right2 < offset1.left){
+			distance.push($.calcDistance(bottomRight2, topLeft1))
+			distance.push($.calcDistance(bottomRight2, bottomLeft1))
+			distance.push($.calcDistance(topRight2, topLeft1))
+			distance.push($.calcDistance(topRight2, bottomLeft1))
+		}
+
+		//TODO: 0 Could be optimized.
+		return Math.min.apply(null, distance);
+	}
+
+	$.fn.nearest = function(selector){
+		var isOverlap = false, self = this, data = $(), value = false, tmp, el1, el2, offset1, offset2, targetOffset = this.offset(), width = this.outerWidth(), height = this.outerHeight();
+		$(selector || '*:visible').not(this.get(0)).each(function(i, el){
+
+			if(!isOverlap){
+				if(self.isOverlap(el)){
+          tmp = self.overlappedSize(el)
+          tmp = tmp.width*tmp.height
+          data = $(el)
+          value = tmp
+          data.add(el)
+					isOverlap = true
+				}
+				else{
+          if(!value){
+            value = self.nearestDistance(el);
+            data = $(el)
+          }
+          else{
+            if(self.nearestDistance(el) < value){
+              data = $(el)
+              value = self.nearestDistance(el)
+            }
+            else if(value == self.nearestDistance(el)){
+							el1 = data.last(), el2 = $(el), dist2 = $.calcDistance(self.centerPoint(),el2.centerPoint()), dist1 = $.calcDistance(self.centerPoint(),el1.centerPoint())
+
+							if(dist2 < dist1)
+								data = el2
+							else if(dist1 == dist2)
+								data = data.add(el)
+            }
+          }
+				}
+			}
+			else{
+        tmp = self.overlappedSize(el)
+        tmp = tmp.width*tmp.height
+				if(value < tmp){
+					data = $(el)
+					value = tmp
+				}
+				else if(value == tmp){
+					el1 = data.last(), el2 = $(el), dist2 = $.calcDistance(self.centerPoint(),el2.centerPoint()), dist1 = $.calcDistance(self.centerPoint(),el1.centerPoint())
+
+					if(dist2 < dist1)
+						data = el2
+					else if(dist1 == dist2)
+						data = data.add(el)
+				}
+			}
+		})
+
+		return data;
+	}
+
+	/**
+	 * Check if element is in viewport
+	 * @return {boolean} true if element in viewport
+	 */
+	$.fn.inViewport = function() {
+    var rect = this.getBoundingClientRect();
+
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+	};
+
+	/**
+	 * Get HTML string of element
+	 * @return {String}   Outer HTML string of an element
+	 */
+	$.fn.outerHTML = function(s) {
+		return s
+	    ? this.before(s).remove()
+	    : jQuery("<p>").append(this.eq(0).clone()).html();
+	};
+
+	/**
+	 * Check if element touched the top of the window
+	 * @return {boolean} true if element touched the top of the window
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.touchTop = function(){
+		//var el = $(this);
+		return $(this).offset().top<0
+	};
+
+	/**
+	 * Check if element touched the bottom of the window
+	 * @return {boolean} true if element touched the bottom of the window
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.touchBottom = function(){
+		var wd = $(window);
+		return (this.offset().top + this.height()) >= (wd.height()+wd.scrollTop())
+	};
+
+	/**
+	 * Get values from jui2 widget inside selected element
+	 * @return {object} Collection of jui2 widget values
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.getValues = function(){
+		var values = {}
+		this.find('j-textfield, j-textarea, j-passwordfield, j-combofield, j-datefield, j-numberfield, j-editor').filter(function(){
+			var el = $(this);
+	    return (el.attr('name')||el.attr('id')) !== undefined
+	  }).each(function(i, val){
+	    var el = $(val), id = el.attr('name')||el.attr('id')
+			values[id] = el.val()
+		})
+		return values;
+	};
+
+	/**
+	 * Get RGB value from hex color
+	 * @param  {string} color Hex color
+	 * @return {object}       Objct containing RGB value
+	 * @author Deddy Lasmono Putro
+	 */
+	$.getRGB = function(color) {
+		var r, g, b, rgb;
+		if(color.match(/rgb/gi)){
+			rgb = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+			r = rgb[1];
+			g = rgb[2];
+			b = rgb[3];
+
+		  return {
+				R: r,
+				G: g,
+				B: b
+		  };
+		}
+		else{
+			r = color.substring(1, 3);
+			g = color.substring(3, 5);
+			b = color.substring(5, 7);
+
+		  return {
+				R: parseInt(r, 16),
+				G: parseInt(g, 16),
+				B: parseInt(b, 16)
+		  };
+		}
+	};
+
+	/**
+	 * Get ideal color (black or white) for defined background color
+	 * @param  {string} bgColor Hex color
+	 * @return {string} color Hex color (black/white)
+	 * @author Deddy Lasmono Putro
+	 */
+	$.idealTextColor = function(bgColor) {
+
+		var nThreshold = 105,
+		components = $.getRGB(bgColor),
+		bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
+
+		return ((255 - bgDelta) < nThreshold) ? "#000000" : "#ffffff";
+	};
+
+	/**
+	 * Get only text(remove children) from element
+	 * @return {string} Element's text
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.justtext = function() {
+		var c = this.clone(), text = c.children()
+		.remove()
+		.end()
+		.text();
+		c.remove();
+		return text;
+	};
+
+	/**
+	 * Center an element
+	 * @return {jQuery} jQuery object
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.center = function () {
+		var wd = $(window)
+	  this.css("position","absolute");
+	  this.css("top", Math.max(0, ((wd.height() - this.outerHeight(false)) / 2) + wd.scrollTop()) + "px");
+	  this.css("left", Math.max(0, ((wd.width() - this.outerWidth(false)) / 2) + wd.scrollLeft()) + "px");
+	  return this;
+	};
+
+	/**
+	 * Check if element overlapping other element
+	 * @param  {jQuery} selector Jquery selector, object or eleemnt
+	 * @return {boolean}          true if overlapping
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.isOverlap = function(selector){
+		var rect1, rect2 = selector instanceof jQuery ? selector[0].getBoundingClientRect() : (selector instanceof HTMLCollection ? selector.getBoundingClientRect() : $(selector)[0].getBoundingClientRect())
+		if(!this.is(':visible')){
+			this.css('opacity', 0).show();
+			rect1 = this[0].getBoundingClientRect()
+			this.hide().css('opacity', '');
+		}
+		else
+			rect1 = this[0].getBoundingClientRect()
+		return !(rect1.right < rect2.left ||
+	    rect1.left > rect2.right ||
+	    rect1.bottom < rect2.top ||
+	    rect1.top > rect2.bottom)
+	};
+
+	/**
+	 * Check if element inside another element
+	 * @param  {jQuery} selector jQuery object, selector or HTMLElement
+	 * @return {boolean}          true if element inside another element
+	 * @author Deddy Lasmono Putro
+	 */
+	$.fn.isInside = function(selector){
+		var rect1 = this[0].getBoundingClientRect(), rect2 = selector instanceof jQuery ? selector[0].getBoundingClientRect() : (selector instanceof HTMLCollection ? selector.getBoundingClientRect() : $(selector)[0].getBoundingClientRect())
+		return (rect2.right > rect1.right &&
+	    rect2.left < rect1.left ||
+	    rect2.bottom > rect1.bottom ||
+	    rect2.top < rect1.top)
+	};
+
+	/**
+	 * Get elements that touching selected element
+	 * @param  {jQuey} selector jQuery selector, object or HTMLElement
+	 * @return {jQuery}          jQuery object that contains all element that touching selected element
+	 */
+	$.fn.touching = function(selector){
+	  var el = this;
+	  return $(selector || '*:visible').filter(function(){
+	    return el.isOverlap(this)
+	  })
+	}
+
 	/**
 	 * Check if element has scrollbar or not
 	 * @return {boolean} Return true if element has scrollbar
+	 * @author Deddy Lasmono Putro
 	 */
     $.fn.hasScrollBar = function() {
-        return this.get(0).scrollHeight > this.outerHeight();
-    }
+      return this.get(0).scrollHeight > this.outerHeight();
+    };
+
 })(jQuery);
 
 /*!
@@ -395,3 +791,96 @@ jQuery.fn.justtext = function() {
 	};
 
 })(jQuery, this);
+;/****lang/day.js****/
+(function($){
+
+	jui2.lang.day = {
+		en: {
+			sun: {
+				short: 'Sun',
+				long: 'Sunday'
+			},
+			mon: {
+				short: 'Mon',
+				long: 'Monday'
+			},
+			tue: {
+				short: 'Tue',
+				long: 'Tuesday'
+			},
+			wed: {
+				short: 'Wed',
+				long: 'Wednesday'
+			},
+			thu: {
+				short: 'Thu',
+				long: 'Thursday'
+			},
+			fri: {
+				short: 'Fri',
+				long: 'Friday'
+			},
+			sat: {
+				short: 'Sat',
+				long: 'Saturday'
+			}
+		}
+	}
+
+}(jQuery));/****lang/month.js****/
+(function($){
+
+	jui2.lang.month = {
+		en: {
+			jan: {
+				short: 'Jan',
+				long: 'January'
+			},
+			feb: {
+				short: 'Feb',
+				long: 'February'
+			},
+			mar: {
+				short: 'Mar',
+				long: 'March'
+			},
+			apr: {
+				short: 'Apr',
+				long: 'April'
+			},
+			may: {
+				short: 'May',
+				long: 'May'
+			},
+			jun: {
+				short: 'Jun',
+				long: 'June'
+			},
+			jul: {
+				short: 'Jul',
+				long: 'July'
+			},
+			aug: {
+				short: 'Aug',
+				long: 'August'
+			},
+			sep: {
+				short: 'Sep',
+				long: 'September'
+			},
+			oct: {
+				short: 'Oct',
+				long: 'October'
+			},
+			nov: {
+				short: 'Nov',
+				long: 'November'
+			},
+			dec: {
+				short: 'Dec',
+				long: 'December'
+			},
+		}
+	}
+
+}(jQuery));

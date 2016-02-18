@@ -2,6 +2,12 @@
 <j-textfield class="j-gotopage">Page</j-textfield>
 <span class="j-pageof">of&nbsp;</span>
 <i class="fa fa-angle-right"></i>
+<j-combofield class="j-itemPerPage" value="10">
+<j-table>
+  [["Items per page"],[10],[25],[50],[100],[200]]
+</j-table>
+</j-combofield>
+<span>items per page</span>
 <i class="fa fa-refresh"></i>
 <j-spacer></j-spacer>
 <span class="j-total">0 items</span>

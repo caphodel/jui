@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Pagination extension for table widget
  * @class pagination @extension table
@@ -25,12 +26,14 @@
 
 		var target = null;
 
-		if(this.getAttribute('target') != null){
+		target = (this.getAttribute('target') != null) ? $(this.getAttribute('target'))[0] : $(this).parent().children('j-loader')[0]
+
+		/*if(this.getAttribute('target') != null){
 			target = $(this.getAttribute('target'))[0]
 		}
 		else{
 			target = $(this).parent().children('j-loader')[0]
-		}
+		}*/
 
 		if(target){
 
@@ -61,11 +64,11 @@
 				param.iDisplayLength = parseInt(param.iDisplayLength)
 				param.iTotalRecords = parseInt(param.iTotalRecords)
 				param.iDisplayStart += param.iDisplayLength
-				if(param.iDisplayStart>param.iTotalRecords)
+				if(param.iDisplayStart>=param.iTotalRecords)
 					param.iDisplayStart -= param.iDisplayLength
 				target.target.generateData();
 			})
-			
+
 			$self.children('.j-gotopage').on('keydown', function(e){
 				if(e.keyCode == 13){
 					param.iDisplayLength = parseInt(param.iDisplayLength)
@@ -74,11 +77,20 @@
 				}
 			})
 
+			$self.children('.j-itemPerPage').on('select', function(e, val){
+				param.iDisplayLength = parseInt(val);
+				target.target.generateData();
+			})
+
 			target.afterDrawMethods['pagination'] = function(){
 				$self.children('.j-pageof').text(' of '+Math.ceil(param.iTotalRecords/param.iDisplayLength));
 				$self.children('.j-gotopage').val(Math.ceil(param.iDisplayStart/param.iDisplayLength)+1);
 				$self.children('.j-total').text(param.iTotalRecords+' items ');
+
+				$self.find('.j-itemPerPage j-toolbar').remove()
 			}
+
+			target.afterDrawMethods['pagination']();
 
 		}
 
@@ -98,3 +110,4 @@
 	}
 
 }(jQuery))
+;

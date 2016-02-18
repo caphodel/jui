@@ -2,7 +2,7 @@
  * @classdesc Button custom web component
  * @class button
  * @property {string} color Available color is blue and red
- * @property {string} icon Button icon, using font awesome. Ex. fa-calendar etc. For icon list see <a href="">http://fortawesome.github.io/Font-Awesome/icons/</a>
+ * @property {string} icon Button icon, using font awesome. Ex. fa-calendar etc. For icon list see <a href="http://fontawesome.github.io/Font-Awesome/icons/">http://fontawesome.github.io/Font-Awesome/icons/</a>
  * @example <caption>Basic button</caption>
  * <j-button>My Button</j-button>
  * @example <caption>Button with different color</caption>
@@ -17,6 +17,9 @@
 	proto.createdCallback = function() {
 
 		this.iconPosition = 'afterBegin';
+
+		$(this).attr('tabindex', 0);
+
 		this.enabledAttrChange = ['disabled', 'icon']
 
 		if(this.innerHTML.trim() == '')
@@ -55,3 +58,4 @@
 	}
 
 }(jQuery))
+;

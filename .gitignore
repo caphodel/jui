@@ -14,3 +14,10 @@ jquery.js
 jui.zip
 jsdoc/
 conf.json
+npm-debug.log
+test.html
+test.xlsx
+test2.xlsx
+xlsx.js
+jszip.js
+dygraph.js

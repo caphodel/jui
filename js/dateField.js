@@ -1,26 +1,27 @@
+
 /**
  * @classdesc Datefield custom web component
  * @class dateField
- * @property {string} format Date formatting for datefield value, format conventions is same with momentjs formatting conventions see <a href="http://momentjs.com/docs/#/displaying/">http://momentjs.com/docs/#/displaying/</a>
+ * @property {string} format Date formatting for datefield value, format conventions using momentjs formatting conventions see <a href="http://momentjs.com/docs/#/displaying/">http://momentjs.com/docs/#/displaying/</a>
  * @example <caption>Datefield widget basic usage</caption>
  * <j-datefield id="date">Date</j-datefield>
  * @example <caption>Datefield formatting</caption>
  * <j-datefield format="DD MMM YYYY">Date</j-datefield>
  * @augments textField
  */
-
+//TODO: clearing and trimming code
 (function($){
 
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function() {
-		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.comboField);
+		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.dateField);
 
-		var $self = $(this), $table, self = this
+		var $self = $(this), $table, self = this, id = this.juiid
 
 		this.setAttribute("icon", "fa-calendar");
 
-		jui2.ui.textField.proto.createdCallback.call(this, 'Datefield')
+		jui2.ui.textField.proto.createdCallback.call(this, '')
 
 		if(!$self.attr('format')){
 			$self.attr('format', 'DD/MM/YYYY')
@@ -40,28 +41,39 @@
 		$table.find('.fa-chevron-right').parent().click(function(){
 			self.nextMonth($table)
 		})
-
-		$self.bind( "clickout", function(event){
-			if(event.target != $self[0] && $(event.target).parents('j-datefield')[0] != $self[0] && $(event.target).parents('[belongto=j-dateField]').length == 0){
+		//self.timestamp = 0
+		$self.unbind('clickout').bind( "clickout", function(event){
+			if(event.target != $self[0] && $(event.target).parents('#'+$self.attr('id')).length == 0 && $(event.target).parents('[belongto=j-dateField]').length == 0/* && self.timestamp != event.timestamp*/){
 				$table.detach().appendTo($self);
-				$('#j-dateField-'+$self.attr('id')).remove();
+				$('#j-dateField-'+id).remove();
 				$table.hide();
+
+				/*$('[belongto=j-dateField]').filter(function(){
+					return $(this).
+				})*/
+
+				/*if($(event.target).parents('j-datefield, [belongto=j-dateField]').length == 0 && $(event.target).parents('j-datefield')[0] != $self[0]){
+					$('[belongto=j-dateField]').find('table').detach().appendTo($self)
+					$('[belongto=j-dateField]').find('table').hide()
+					$('[belongto=j-dateField]').remove()
+				}*/
 			}
+			//self.timestamp = event.timestamp
 		});
 
 		$table.delegate('td', 'click', function(e){
 			e.stopPropagation();
-			var elNum = parseInt(this.innerHTML)
+			var elNum = parseInt(this.innerHTML), $this = $(this);
 
-			if($(this).parent().index()==0){
-				if($(this).nextAll().filter(function( index ) {
+			if($this.parent().index()==0){
+				if($this.nextAll().filter(function( index ) {
 					return parseInt(this.innerHTML) < elNum
 				}).length > 0){
 					$table.find('thead tr:first-child th:nth-child(2)').text(moment($table.find('thead tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').format('MMMM YYYY'))
 				}
 			}
-			else if($(this).parent().index()==($(this).parent().siblings().length)){
-				if($(this).prevAll().filter(function( index ) {
+			else if($this.parent().index()==($this.parent().siblings().length)){
+				if($this.prevAll().filter(function( index ) {
 					return parseInt(this.innerHTML) > elNum
 				}).length > 0){
 					$table.find('thead tr:first-child th:nth-child(2)').text(moment($table.find('thead tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').format('MMMM YYYY'))
@@ -69,7 +81,7 @@
 			}
 			$self.val(moment(('00'+elNum).slice(-2)+' '+$table.find('thead tr:first-child th:nth-child(2)').text(), 'DD MMMM YYYY').format($self.attr('format')))
 			$table.detach().appendTo($self);
-			$('#j-dateField-'+$self.attr('id')).remove();
+			$('#j-dateField-'+id).remove();
 			$table.hide();
 			/**
 			 * Fires when date selected
@@ -94,25 +106,18 @@
 			if($(e.target).parents('table')[0] != $table[0] && e.target != $table[0]){
 				$table.toggle();
 				if($table.is(':visible')){
-					/*//set top left
-					$table.css('top', parseInt($self.css('height'))+$self.offset().top)
-					.css('left', $self.position().left+$self.parents().filter(function(){
-						//return $(this).scrollLeft()>0
-						return $(this).hasScrollBar()
-					}).scrollLeft());
-
-					var parent = $self.parents().filter(function(){
-						return $(this).hasScrollBar()
-					})
-
-					if(parent.length > 0)
-						if(parent.eq(0).prop('tagName')!='HTML'){
-							$table.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())
+					if($('#j-dateField-'+id).length==0)
+						$('body').append('<j-modal belongto="j-dateField" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-dateField-'+id+'"></j-modal>');
+					setTimeout(function(){
+						if($('#j-dateField-'+id).touchBottom()){
+							$('#j-dateField-'+id).attr('snappos', 'bottomleft to topleft')
+							setTimeout(function(){
+								if($('#j-dateField-'+id).touchTop())
+									$('#j-dateField-'+id).attr('snappos', 'topleft to bottomleft')
+							}, 250);
 						}
-
-					$table.css('top', parseInt($self.css('height'))+$self.position().top+parent.scrollTop())*/
-					$('body').append('<j-modal belongto="j-dateField" snapto="#'+$self.attr('id')+' > input" snappos="topleft to bottomleft" id="j-dateField-'+$self.attr('id')+'"></j-modal>');
-					$table.detach().appendTo('#j-dateField-'+$self.attr('id'))
+					}, 250)
+					$table.detach().appendTo('#j-dateField-'+id)
 
 					var date = [], lastDate, startDate, w = [], i = 0;
 					//$table.css('z-index', z == '-Infinity' ? 100 : z);
@@ -127,30 +132,30 @@
 						startDate = moment().startOf('month').startOf('week')
 
 					while(startDate.format('DD/MM/YYYY') != lastDate.format('DD/MM/YYYY')){
-						w.push(startDate.format('D'))
+						w[w.length] = startDate.format('D')
 						i++;
 						startDate.add(1, 'day');
 						if(i==7){
 							i=0;
-							date.push(w);
+							date[date.length] = w;
 							w = [];
 						}
 					}
 
-					w.push(startDate.format('D'))
+					w[w.length] = startDate.format('D')
 					startDate.add(1, 'day');
 					if(w.length > 0)
-						date.push(w);
+						date[date.length] = w;
 					$table.find('> tbody').empty().append(jui2.tmpl['calendarBody']({date: date}));
 				}
 				else{
 					$table.detach().appendTo($self);
-					$('#j-dateField-'+$self.attr('id')).remove();
+					$('#j-dateField-'+id).remove();
 				}
 			}
 		});
 
-		jui2.keycodes.bind(this, "")
+		jui2.keycodes.bind(this, "tab")
 		/*--*
 		 * Fires after dateField created
 		 * @event afterdraw
@@ -174,6 +179,26 @@
 			delete this.value;
 		}
 
+		$self.on('keydown', function(e){
+			if(e.keyCode == 8){
+				$self.val('');
+				$table.detach().appendTo($self);
+				$('#j-dateField-'+id).remove();
+				$table.hide();
+			}
+		})
+
+		this.enabledAttrChange = $.unique(this.enabledAttrChange.concat(['disabled', 'icon']));
+
+    for(i in this.attributes){
+			var attrName = this.attributes[i].nodeName,
+			newVal = this.attributes[i].nodeValue;
+      if(jui2.attrChange[this.tagName.toLowerCase()+'_'+attrName])
+  			jui2.attrChange[this.tagName.toLowerCase()+'_'+attrName](this, false, newVal);
+      else if(jui2.attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
+        jui2.attrChange[attrName](this, false, newVal);
+		}
+
 	};
 
 /**
@@ -187,19 +212,19 @@
 		lastDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').endOf('month').endOf('week')
 		startDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').startOf('month').startOf('week')
 		while(startDate.format('DD/MM/YYYY') != lastDate.format('DD/MM/YYYY')){
-			w.push(startDate.format('D'))
+			w[w.length] = startDate.format('D')
 			i++;
 			startDate.add(1, 'day');
 			if(i==7){
 				i=0;
-				date.push(w);
+				date[date.length] = w;
 				w = [];
 			}
 		}
-		w.push(startDate.format('D'))
+		w[w.length] = startDate.format('D')
 		startDate.add(1, 'day');
 		if(w.length > 0)
-			date.push(w);
+			date[date.length] = w;
 
 		$table.find('thead tr:first-child th:nth-child(2)').text(moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").subtract(1, 'month').format("MMMM YYYY"))
 		$table.find('> tbody').empty().append(jui2.tmpl['calendarBody']({date: date}));
@@ -215,28 +240,30 @@
 		lastDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').endOf('month').endOf('week')
 		startDate = moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').startOf('month').startOf('week')
 		while(startDate.format('DD/MM/YYYY') != lastDate.format('DD/MM/YYYY')){
-			w.push(startDate.format('D'))
+			w[w.length] = startDate.format('D')
 			i++;
 			startDate.add(1, 'day');
 			if(i==7){
 				i=0;
-				date.push(w);
+				date[date.length] = w;
 				w = [];
 			}
 		}
-		w.push(startDate.format('D'))
+		w[w.length] = startDate.format('D')
 		startDate.add(1, 'day');
 		if(w.length > 0)
-			date.push(w);
+			date[date.length] = w;
 
 		$table.find('thead tr:first-child th:nth-child(2)').text(moment(table.find('tr:first-child th:nth-child(2)').text(), "MMMM YYYY").add(1, 'month').format("MMMM YYYY"))
 		$table.find('> tbody').empty().append(jui2.tmpl['calendarBody']({date: date}));
 	}
 
 	proto.attributeChangedCallback = function(attrName, oldVal, newVal){
-		var enabledAttrChange = ['disabled', 'icon'];
-		if(jui2.attrChange[attrName] && enabledAttrChange.indexOf(attrName) > -1)
-			jui2.attrChange[attrName](this, oldVal, newVal);
+		var tagName = this.tagName, attrChange = jui2.attrChange, key = tagName.toLowerCase()+'_'+attrName;
+		if(attrChange[key])
+			attrChange[key](this, oldVal, newVal);
+    else if(attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
+      attrChange[attrName](this, oldVal, newVal);
 	}
 
 	jui2.ui.dateField = {
@@ -247,3 +274,4 @@
 	}
 
 }(jQuery))
+;

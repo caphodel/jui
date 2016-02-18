@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Inplace editable extension for table widget
  * @class tableInPlaceForm @extension table
@@ -31,10 +32,7 @@
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function() {
-
 		var $self = $(this), $target = $($self.attr('target')), form = $self.html()
-
-		//$self.empty()
 
 		this.form = form
 
@@ -55,8 +53,8 @@
 
 		$target.nodoubletapzoom()
 
-		$target.on('afterdraw', function(e){
-			$target.find('> .j-table-body > table > tbody > tr > '+$self.attr('clicktarget')).on('dblclick doubletap', function(){
+		$target.on('self.afterdraw', function(e){
+			$target.find('> .j-table-body > table > tbody > tr > '+$self.attr('clicktarget')).on('dblclick doubletap', function(event){
 				var tr = $(this).parent()
 				if(tr.find('.j-table-inplace-form').length == 0){
 					tr.children().hide()
@@ -69,7 +67,7 @@
 					})
 					tr.find('.j-table-form-cancel').on('click', function(){
 						var el = $(this).parent().parent()
-						el.parent().children().show()
+						el.parent().children(":not([hide=true])").show()
 						/**
 						 * Fires when cancel button clicked
 						 * @event cancel
@@ -82,7 +80,7 @@
 					})
 					tr.find('.j-table-form-submit').on('click', function(){
 						var el = $(this).parent().parent()
-						el.parent().children().show()
+						el.parent().children(":not([hide=true])").show()
 						/**
 						 * Fires when submit button clicked
 						 * @event submit
@@ -94,6 +92,7 @@
 						//el.remove()
 					})
 					tr.children('.j-table-inplace-form').width($target.find('> .j-table-body > table').width());
+					$self.triggerHandler('afterdraw', [$target[0].data[tr.index()]])
 				}
 			})
 		})
@@ -111,3 +110,4 @@
 	}
 
 }(jQuery))
+;

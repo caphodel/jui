@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Numberfield custom web component
  * @class numberField
@@ -12,7 +13,7 @@
 
 	proto.createdCallback = function() {
 
-		jui2.ui.textField.proto.createdCallback.call(this, 'Numberfield')
+		jui2.ui.textField.proto.createdCallback.call(this, '')
 
 		jui2.keycodes.bind(this, "tab,enter,backspace,escape,.,[0,9],delete,[96,111]")
 	};
@@ -31,3 +32,4 @@
 	}
 
 }(jQuery))
+;

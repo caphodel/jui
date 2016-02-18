@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Table custom web component
  * @class table
@@ -78,50 +79,29 @@ $('#table1').on('afterdraw', function(){
 	proto.createdCallback = function() {
 		jui2.ui.base.proto.createdCallback.call(this, jui2.ui.table);
 		var $self = $(this),
-		//custom = this.custom = $(this).children('j-custom').detach(),
-		drop = this.drop = $(this).children('j-drop').detach().attr('type', 'j-table'),
-		loader = this.loader = $(this).children('j-loader').detach().attr('type', 'j-table'),
-		pagination = this.pagination = $(this).children('j-pagination').detach(),
-		toolbarBot = this.toolbar = $(this).children('j-toolbar[position="bottom"]').detach(),
-		toolbar = this.toolbar = $(this).children('j-toolbar').detach(),
-		data, cst, z, i, thCount = 0, th
+		//custom = $(this).children('j-custom').detach(),
+		drop = this.drop = $self.children('j-drop').detach().attr('type', 'j-table'),
+		loader = this.loader = $self.children('j-loader').detach().attr('type', 'j-table'),
+		pagination = this.pagination = $self.children('j-pagination').detach(),
+		toolbarBot = this.toolbar = $self.children('j-toolbar[position="bottom"]').detach(),
+		toolbar = this.toolbar = $self.children('j-toolbar').detach(),
+		data, cst, z, i, thCount = 0, th, $tbody, $thead;
 
-		// #TODO:10 Create j-drop as extension
-		// #DOING:20 remove all code that processs another tag, and make it as a separate extension
-		/*end of doing*/
+		var text = $('<div>'+this.innerHTML+'</div>');
+		text.children().remove()
 
-		if(this.innerHTML.trim() == '')
+		if(text[0].innerHTML.trim().replace(/<(.|\n)*?>(.|\n)*?<\/(.|\n)*?>/ig, '') == "")
 			data = [];
 		else
-			data = JSON.parse(this.innerHTML.replace(/<(.|\n)*?>(.|\n)*?<\/(.|\n)*?>/ig, ''));
+			data = JSON.parse(text[0].innerHTML.replace(/<(.|\n)*?>(.|\n)*?<\/(.|\n)*?>/ig, ''));
+
+		text.remove();
 
 		this.aaData = data;
 
 		var headCols = data.shift()
 
 		this.data = $.extend(true, [], data);
-
-		/*if(this.custom.length > 0){
-			for(z in data){
-				for (i in data[z]){
-					cst = custom.filter( "[target='"+i+"']" );
-
-					if(cst.length == 0){
-						var attr = custom.eq(i).attr('target')
-						if(typeof attr === typeof undefined || attr === false)
-							cst = custom.eq(i)
-					}
-
-					if(cst.length > 0 && cst.text().trim() != ''){
-						if(!cst[0].fn)
-							cst[0].fn = eval('fn = '+cst.html().replace(/&lt;/g, '<')
-								.replace(/&gt;/g, '>')
-								.replace(/&amp;/g, '&'));
-						this.data[z][i] = cst[0].fn(data[z]);
-					}
-				}
-			}
-		}*/
 
 		$self.on('afterdraw.height', function(){
 			var $self = $(this)
@@ -136,14 +116,6 @@ $('#table1').on('afterdraw', function(){
 								'display': 'block'
 							})
 						}
-						/*else{
-							$self.find('> .j-table-body').css({
-								'flex': '',
-								'-webkit-box-flex': '',
-								'-webkit-flex': '',
-								'display': 'flex'
-							})
-						}*/
 					}
 					else{
 						if(typeof $self.attr('height') == 'undefined'){
@@ -170,46 +142,81 @@ $('#table1').on('afterdraw', function(){
 		})
 
 		$self.on('self.afterdraw', function(){
-			//$(this).css('display', 'block')
-			//setTimeout(function)
-			var idx = $self.find('> .j-table-body > table > thead > tr > th').filter(function(){
-				return this.innerHTML === ''
+			$thead = $self.find('> .j-table-body > table:first-child > thead');
+			$tbody = $self.find('> .j-table-body > table:first-child > tbody');
+
+			var idx = $thead.find(' > tr > th').filter(function(){
+				return $(this).text().trim() === ''
 			}).index()
 
-			$self.find('> .j-table-body > table > tbody > tr > td:nth-child('+(idx+1)+')').hide()
+			$tbody.find(' > tr > td:nth-child('+(idx+1)+')').hide()
+
+			$tbody.find( "> tr").click(function() {
+				$(this).addClass('j-active').siblings().removeClass('j-active')
+			})
+
+			$thead.find(' > tr > th .j-table-sort').off('click').click(function(){
+				if($self[0].loader.length>0){
+					var param = $self[0].loader[0].param
+					if(param.iSortCol == $(this).parent().parent().index() && param.sSortDir == 'asc'){
+						param.sSortDir = 'desc'
+					}
+					else{
+						param.sSortDir = 'asc'
+					}
+					param.iSortCol = $(this).parent().parent().index();
+					$self[0].generateData();
+				}
+			})
 		})
 
 		jui2.ui.dataview.proto.createdCallback.call(this)
 
-		$(this.children[0]).children().prepend(jui2.tmpl['tableHeader']({columns: headCols}) );
+		$(this.children[0]).children().prepend( jui2.tmpl['tableHeader']({columns: headCols}) );
 
-		/*th = $(this.children[0].children[0]).children('thead').find('tr:last-child th')
-		th.each(function(z, val){
-			var cst = custom.filter( "[target='"+z+"']" ),
-			w = $(val).width();
+		$thead = $self.find('> .j-table-body > table:first-child > thead');
+		$tbody = $self.find('> .j-table-body > table:first-child > tbody');
 
-			if(cst.length == 0){
-				var attr = custom.eq(z).attr('target')
-				if(typeof attr === typeof undefined || attr === false){
-					cst = custom.eq(z)
-				}
-			}
-
-			if(cst.length > 0){
-				w = cst.attr('width')
-			}
-			if(val.innerHTML != '')
-				colgroup += '<colgroup><col width="'+w+'"></col></colgroup>';
+		$(this.children[0]).children().find('j-resize').on('afterresize', function(){
+			var $self = $(this), w = $self.parent().outerWidth()
+			$self.parent().parent().width(w)
+			$self.css('left', '')
+			$self.find('>j-table-fixedheader th div').filter(function(){
+				return $(this).text().trim()==$self.parent().text().trim()
+			}).css('width', '').parent().width(w)
+			$thead.find(' > tr > th > div').each(function(i, val){
+				$(val).css('width', '')
+			})
+		}).on('beforeresize', function(){
+			var divs = $thead.find(' > tr > th > div'),
+			ws = divs.map(function(i, val){
+			  return $(val).width()
+			}).get()
+			divs.each(function(i, val){
+				var $el = $(val)
+				$el.width(ws[i]);
+			})
 		})
-		$self.children('div').children('table').prepend(colgroup).css('table-layout', 'fixed');*/
 
 		var c = 0;
-		$self.find('> div > table > thead > tr > th').filter(function(i, val){
-			return val.innerHTML === '' || val.innerHTML === ' ';
+
+		$thead.find(' > tr > th').filter(function(i, val){
+			return $(val).text() === '' || $(val).text() === ' ';
 		}).hide().each(function(i,val){
-			$self.find('> div > table > tbody > tr > td:nth-child('+(parseInt($(val).index())+1)+')').hide()
+			$tbody.find(' > tr > td:nth-child('+(parseInt($(val).index())+1)+')').hide()
 			c++;
 		});
+
+		/*$(this).find('>.j-table-body > table > thead > tr > th').each(function(i, val){
+			var $el = $(val)
+			$el.children().outerWidth($el.width());
+		})*/
+		/*$(this).find('>.j-table-body > table > thead > tr > th j-resize').click(function(){
+			$(this).find('>.j-table-body > table > thead > tr > th j-resize').each(function(i, val){
+				var div = $(val).parent()
+				div.outerWidth(div.parent().width())
+			})
+		});*/
 
 		$self.append(loader)
 
@@ -217,11 +224,11 @@ $('#table1').on('afterdraw', function(){
 			$self.append(pagination)
 
 		if(toolbar){
-			toolbar.insertBefore($self.children('div'))
+			toolbar.insertBefore($self.children('.j-table-body'))
 		}
 
 		if(toolbarBot){
-			toolbarBot.insertAfter($self.children('div'))
+			toolbarBot.insertAfter($self.children('.j-table-body'))
 		}
 
 		for(i in jui2.method){
@@ -237,24 +244,26 @@ $('#table1').on('afterdraw', function(){
 		}
 
 		/* active tr highlight */
-		$self.find('> div > table > tbody ').delegate( "> tr", "click", function() {
-			$(this).addClass('j-active').siblings().removeClass('j-active')
-		})
 
-		/*var a = this.concat();
-    for(var i=0; i<a.length; ++i) {
-        for(var j=i+1; j<a.length; ++j) {
-            if(a[i] === a[j])
-                a.splice(j--, 1);
-        }
-    }*/
 		this.enabledAttrChange = $.unique(this.enabledAttrChange.concat(['disabled', 'width', 'height', 'title']));
+
+		for(i in this.attributes){
+			var attrName = this.attributes[i].nodeName,
+			newVal = this.attributes[i].nodeValue, attr = this.tagName.toLowerCase()+'_'+attrName;
+      if(jui2.attrChange[attr])
+  			jui2.attrChange[attr](this, false, newVal);
+      else if(jui2.attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
+        jui2.attrChange[attrName](this, false, newVal);
+		}
 
 	};
 
 	proto.attributeChangedCallback = function(attrName, oldVal, newVal){
-		if(jui2.attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
-			jui2.attrChange[attrName](this, oldVal, newVal);
+		var attr = this.tagName.toLowerCase()+'_'+attrName;
+		if(jui2.attrChange[attr])
+			jui2.attrChange[attr](this, oldVal, newVal);
+    else if(jui2.attrChange[attrName] && this.enabledAttrChange.indexOf(attrName) > -1)
+      jui2.attrChange[attrName](this, oldVal, newVal);
 	}
 
 	jui2.ui.table = {
@@ -266,3 +275,4 @@ $('#table1').on('afterdraw', function(){
 	}
 
 }(jQuery))
+;

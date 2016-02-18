@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Pivot column extension for table widget
  * @class pivotLeft @extension table
@@ -118,3 +119,4 @@
 	}
 
 }(jQuery))
+;

@@ -1,3 +1,4 @@
+
 /**
  * @classdesc Passwordfield custom web component
  * @class passwordField
@@ -13,8 +14,7 @@
 	var proto = Object.create(HTMLElement.prototype)
 
 	proto.createdCallback = function() {
-
-		jui2.ui.textField.proto.createdCallback.call(this, 'Passwordfield', 'password')
+		jui2.ui.textField.proto.createdCallback.call(this, '', 'password')
 	};
 
 	proto.attributeChangedCallback = function(attrName, oldVal, newVal){
@@ -31,3 +31,4 @@
 	}
 
 }(jQuery))
+;

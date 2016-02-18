@@ -1,3 +1,4 @@
+
  /**
   * @classdesc TextField custom web component
   * @class textField
@@ -22,7 +23,13 @@
 		if(this.innerHTML.trim() == '')
 			this.innerHTML = label
 
+		var tmpValue = this.getAttribute('value') || '';
+
 		this.innerHTML = jui2.tmpl['textField']({label: this.innerHTML, type: type});
+
+		$(this).children().eq(1).attr('value', tmpValue);
+
+		this.removeAttribute('value');
 
 		if(this.getAttribute('icon')){
 			this.insertAdjacentHTML( 'beforeend', '<i class="j-ui-icon fa '+this.getAttribute('icon')+'"></i>' );
@@ -100,3 +107,4 @@
 	}
 
 }(jQuery))
+;

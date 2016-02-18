@@ -1,3 +1,4 @@
+
 (function($){
 	jui2.nextChar = function (c) {
 		return String.fromCharCode(c.charCodeAt(0) + 1);
@@ -104,12 +105,25 @@
 			else
 				tmp.push(jui2.keycodes[val])
 		})
+		var ctrlDown = false,
+		ctrlKey = 17, vKey = 86, cKey = 67, xKey = 88;
 		$(el).keydown(function (e) {
-			if($.inArray(e.keyCode, tmp)>=0){
-				return
+			if(e.keyCode == ctrlKey){
+				ctrlDown = true;
+			}else{
+				if(ctrlDown && (e.keyCode == vKey || e.keyCode == cKey || e.keyCode == xKey)){
+					return;
+				}
+				else{
+					if($.inArray(e.keyCode, tmp)>=0){
+						return
+					}
+					else
+						e.preventDefault();
+				}
 			}
-			else
-				e.preventDefault();
-		});
+		}).keyup(function(e){
+      if (e.keyCode == ctrlKey) ctrlDown = false;
+    });
 	}
-}(jQuery))
+}(jQuery));

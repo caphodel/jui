@@ -12,6 +12,7 @@ module.exports = function (grunt) {
 			dist : {
 				src : [
 					'js/core.js',
+					'js/drag.js',
 					'lang/day.js',
 					'lang/month.js',
 					'js/keycodes.js',
@@ -38,18 +39,28 @@ module.exports = function (grunt) {
 					'js/drop.js',
 					'js/toolbar.js',
 					'js/toolbarScroll.js',
+					'js/tooltip.js',
 					'js/scroll.js',
 					'js/pagination.js',
 					'js/layoutContent.js',
 					'js/layoutResizer.js',
 					'js/colorPicker.js',
-					'js/textarea.js'
+					'js/textarea.js',
+					'js/hslider.js',
+					'js/tree.js',
+					'js/gantt.js',
+					'js/resize.js',
+					'js/editor.js'
 				],
 				dest : 'dist/<%= pkg.name %>.ui.js'
 			},
 			lib : {
-				src : ['lib/document-register-element.js', 'lib/moment.js', 'lib/outside.js', 'lib/handlebars.runtime-v3.0.3.js', 'lib/helper.js', 'lib/touch.js', 'lib/nodoubletapzoom.js'],
+				src : ['lib/head.js', 'lib/document-register-element.js', 'lib/moment.js', 'lib/outside.js', 'lib/handlebars.runtime-v3.0.3.js', 'lib/helper.js', 'lib/touch.js', 'lib/nodoubletapzoom.js', 'lib/nearest.js', 'lib/jquery.ba-throttle-debounce.js', 'lib/wysiwyg-editor.min.js'],
 				dest : 'dist/<%= pkg.name %>.lib.js'
+			},
+			css : {
+				src : ['dist/css/jui2.css', 'css/wysiwyg-editor.css'],
+				dest : 'dist/css/jui2.css'
 			}
 		},
 		uglify : {
@@ -167,7 +178,8 @@ module.exports = function (grunt) {
 			main: {
 				files: [
 				  // includes files within path
-				  {expand: true, src: 'out/*', dest: 'dist/'}
+				  {expand: true, src: 'out/*', dest: 'dist/'},
+				  {expand: true, src: 'extension/**/*', dest: 'dist/'}
 				]
 			}
 		},
@@ -262,21 +274,21 @@ module.exports = function (grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-handlebars');
-	grunt.loadNpmTasks('grunt-yui-compressor');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-ftp-deploy');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-prompt');
 	grunt.loadNpmTasks('grunt-github-releaser');
-	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-jsdoc-ng');
 
 	grunt.registerTask('default', ['prompt:default']);
-	grunt.registerTask('compile', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy']);
-	grunt.registerTask('development', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy', 'ftp-deploy:gg_beta_05']);
-	grunt.registerTask('production', ['concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy', 'ftp-deploy']);
-	grunt.registerTask('release', ['prompt:release', 'concat', 'handlebars', 'uglify', 'less', 'cssmin', 'copy', 'compress'/*, 'github-release'*/]);
+	grunt.registerTask('compile', ['less', 'concat', 'cssmin', 'handlebars', 'uglify', 'copy']);
+	grunt.registerTask('development', ['less', 'concat', 'cssmin', 'handlebars', 'uglify', 'copy', 'ftp-deploy:gg_beta_05']);
+	grunt.registerTask('production', ['less', 'concat', 'cssmin', 'handlebars', 'uglify', 'copy', 'ftp-deploy']);
+	grunt.registerTask('release', ['prompt:release', 'less', 'concat', 'cssmin', 'handlebars', 'uglify', 'copy', 'compress'/*, 'github-release'*/]);
 
 };
