@@ -1,4 +1,86 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Javascript User Interface: Source: core.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <script src="../jquery.js"></script>
+    <script src="../jui2.lib.min.js"></script>
+    <script src="../jui2.tmp.min.js"></script>
+    <script src="../jui2.ui.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link rel="stylesheet" type="text/css" href="../css/jui2.min.css" />
+  	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+    <style>
+    .code-caption {
+      font-style: unset;
+    }
+    .livePreview {
+      width: unset;
+      border: 1px solid #ddd;
+      padding: 34px 24px 14px;
+      position: relative;
+      margin: 14px 0px;
+    }
+
+    .livePreview::after {
+      content: 'Preview';
+      position: absolute;
+      left: -1px;
+      top: -1px;
+      background: #F6F6F6;
+      border: 1px solid #ddd;
+      color: #0095dd;
+      border-bottom-right-radius: 3px;
+      font-family: helvetica,arial,verdana,sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 4px;
+    }
+
+    .prettyprint{
+      width: unset;
+      padding: 30px 12px 10px;
+      position: relative;
+    }
+
+    .prettyprint::after {
+      content: 'Code';
+      position: absolute;
+      left: -1px;
+      top: -1px;
+      background: #F6F6F6;
+      border: 1px solid #ddd;
+      color: #0095dd;
+      border-bottom-right-radius: 3px;
+      font-family: helvetica,arial,verdana,sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 4px;
+    }
+    </style>
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @namespace jui2
  * @global
  */
@@ -23,7 +105,7 @@ var jui2 = jui2 || {
     if (arguments.length == 2) {
       value = arguments[1];
     } else {
-      while (k < len && !(k in t)) {
+      while (k &lt; len &amp;&amp; !(k in t)) {
         k++;
       }
       if (k >= len) {
@@ -31,7 +113,7 @@ var jui2 = jui2 || {
       }
       value = t[k++];
     }
-    for (; k < len; k++) {
+    for (; k &lt; len; k++) {
       if (k in t) {
         value = callback(value, t[k], k, t);
       }
@@ -72,7 +154,7 @@ var jui2 = jui2 || {
 			'a': 'abcdefghijklmnopqrstuvwxyz',
 			'A': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
 			'#': '0123456789',
-			'!': '~`!@#$%^&*()_+-={}[]:";\'<>?,./|\\'
+			'!': '~`!@#$%^&amp;*()_+-={}[]:";\'&lt;>?,./|\\'
 		};
 
 		for (i = chars.length; i--;)
@@ -126,7 +208,7 @@ var jui2 = jui2 || {
 	jui2.iterateJson = function(json, fn){
 		for (var data in json) {
 			fn(json[data])
-			typeof json[data] == 'object' &&
+			typeof json[data] == 'object' &amp;&amp;
 				jui2.iterateJson(json[data], fn)
 		}
 	};
@@ -142,23 +224,23 @@ var jui2 = jui2 || {
 				text = $(el.find('iframe')[0].contentWindow.document.body).html().trim()
 
 			value[id] =
-				role=='textArea' && (text != '<br>' && jui2.escapeHtmlEntities(text.replace('&#x2010;', '-').replace('&#x2013;', '-').replace('&#x9;', '').replace(/&nbsp;/g,' ').replace(/\s\s+/g, ' ').replace(/(^<br>|<br>$)/g,'')) != '' && jui2.escapeHtmlEntities(jui2.cleanWordPaste(text).replace('&#x2010;', '-').replace('&#x2013;', '-').replace('&#x9;', '').replace(/&nbsp;/g,' ').replace(/\s\s+/g, ' ').replace(/(^<br>|<br>$)/g,'')))
-				|| role=='comboField' &&
+				role=='textArea' &amp;&amp; (text != '&lt;br>' &amp;&amp; jui2.escapeHtmlEntities(text.replace('&amp;#x2010;', '-').replace('&amp;#x2013;', '-').replace('&amp;#x9;', '').replace(/&amp;nbsp;/g,' ').replace(/\s\s+/g, ' ').replace(/(^&lt;br>|&lt;br>$)/g,'')) != '' &amp;&amp; jui2.escapeHtmlEntities(jui2.cleanWordPaste(text).replace('&amp;#x2010;', '-').replace('&amp;#x2013;', '-').replace('&amp;#x9;', '').replace(/&amp;nbsp;/g,' ').replace(/\s\s+/g, ' ').replace(/(^&lt;br>|&lt;br>$)/g,'')))
+				|| role=='comboField' &amp;&amp;
 					el.find('input[type=hidden]').val()
-				|| role=='radioField' &&
+				|| role=='radioField' &amp;&amp;
 					el.find('input:checked').val()
-				|| role=='timeField' &&
+				|| role=='timeField' &amp;&amp;
 					el.find('input').eq(0).val()+':'+el.find('input').eq(1).val()
 				|| el.find('input').val()
 
-			if(role=='textArea' && value[id]=='<br>')
+			if(role=='textArea' &amp;&amp; value[id]=='&lt;br>')
 				value[id] = ''
 
 			if(role=='textArea'){
 				if(value[id])
 					value[id] = jui2.escapeHtmlEntities((he.encode(value[id], {
 						'allowUnsafeSymbols': false
-					})).replace('&#x2010;', '-').replace('&#x2013;', '-').replace('&#x9;', '').replace(/&nbsp;/g,' ')
+					})).replace('&amp;#x2010;', '-').replace('&amp;#x2013;', '-').replace('&amp;#x9;', '').replace(/&amp;nbsp;/g,' ')
 					.replace(/\s\s+/g, ' '));
 			}
 
@@ -242,40 +324,40 @@ var jui2 = jui2 || {
 		bottom2 = offset2.top+el.outerHeight(),
 		right2 = offset2.left+el.outerWidth(), distance = []
 
-		if(right1 > offset2.left && !(offset1.left > right2)){
-			if(bottom1 < offset2.top)
+		if(right1 > offset2.left &amp;&amp; !(offset1.left > right2)){
+			if(bottom1 &lt; offset2.top)
 				distance.push(offset2.top - bottom1)
-			if(bottom2 < offset1.top)
+			if(bottom2 &lt; offset1.top)
 				distance.push(offset1.top - bottom2)
 		}
 
-		if(bottom1 > offset2.top && !(offset1.top > bottom2)){
-			if(right1 < offset2.left)
+		if(bottom1 > offset2.top &amp;&amp; !(offset1.top > bottom2)){
+			if(right1 &lt; offset2.left)
 				distance.push(offset2.left - right1)
-			if(right2 < offset1.left)
+			if(right2 &lt; offset1.left)
 				distance.push(offset1.left - right2)
 		}
 
-		if(bottom1 < offset2.top){
+		if(bottom1 &lt; offset2.top){
 			distance.push($.calcDistance(bottomRight1, topLeft2))
 			distance.push($.calcDistance(bottomRight1, topRight2))
 			distance.push($.calcDistance(bottomLeft1, topLeft2))
 			distance.push($.calcDistance(bottomLeft1, topRight2))
 		}
-		else if(bottom2 < offset1.top){
+		else if(bottom2 &lt; offset1.top){
 			distance.push($.calcDistance(bottomRight2, topLeft1))
 			distance.push($.calcDistance(bottomRight2, topRight1))
 			distance.push($.calcDistance(bottomLeft2, topLeft1))
 			distance.push($.calcDistance(bottomLeft2, topRight1))
 		}
 
-		if(right1 < offset2.left){
+		if(right1 &lt; offset2.left){
 			distance.push($.calcDistance(bottomRight1, topLeft2))
 			distance.push($.calcDistance(bottomRight1, bottomLeft2))
 			distance.push($.calcDistance(topRight1, topLeft2))
 			distance.push($.calcDistance(topRight1, bottomLeft2))
 		}
-		else if(right2 < offset1.left){
+		else if(right2 &lt; offset1.left){
 			distance.push($.calcDistance(bottomRight2, topLeft1))
 			distance.push($.calcDistance(bottomRight2, bottomLeft1))
 			distance.push($.calcDistance(topRight2, topLeft1))
@@ -305,14 +387,14 @@ var jui2 = jui2 || {
             data = $(el)
           }
           else{
-            if(self.nearestDistance(el) < value){
+            if(self.nearestDistance(el) &lt; value){
               data = $(el)
               value = self.nearestDistance(el)
             }
             else if(value == self.nearestDistance(el)){
 							el1 = data.last(), el2 = $(el), dist2 = $.calcDistance(self.centerPoint(),el2.centerPoint()), dist1 = $.calcDistance(self.centerPoint(),el1.centerPoint())
 
-							if(dist2 < dist1)
+							if(dist2 &lt; dist1)
 								data = el2
 							else if(dist1 == dist2)
 								data = data.add(el)
@@ -323,14 +405,14 @@ var jui2 = jui2 || {
 			else{
         tmp = self.overlappedSize(el)
         tmp = tmp.width*tmp.height
-				if(value < tmp){
+				if(value &lt; tmp){
 					data = $(el)
 					value = tmp
 				}
 				else if(value == tmp){
 					el1 = data.last(), el2 = $(el), dist2 = $.calcDistance(self.centerPoint(),el2.centerPoint()), dist1 = $.calcDistance(self.centerPoint(),el1.centerPoint())
 
-					if(dist2 < dist1)
+					if(dist2 &lt; dist1)
 						data = el2
 					else if(dist1 == dist2)
 						data = data.add(el)
@@ -349,10 +431,10 @@ var jui2 = jui2 || {
     var rect = this.getBoundingClientRect();
 
     return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      rect.top >= 0 &amp;&amp;
+      rect.left >= 0 &amp;&amp;
+      rect.bottom &lt;= (window.innerHeight || document.documentElement.clientHeight) &amp;&amp;
+      rect.right &lt;= (window.innerWidth || document.documentElement.clientWidth)
     );
 	};
 
@@ -363,7 +445,7 @@ var jui2 = jui2 || {
 	$.fn.outerHTML = function(s) {
 		return s
 	    ? this.before(s).remove()
-	    : jQuery("<p>").append(this.eq(0).clone()).html();
+	    : jQuery("&lt;p>").append(this.eq(0).clone()).html();
 	};
 
 	/**
@@ -373,7 +455,7 @@ var jui2 = jui2 || {
 	 */
 	$.fn.touchTop = function(){
 		//var el = $(this);
-		return $(this).offset().top<0
+		return $(this).offset().top&lt;0
 	};
 
 	/**
@@ -393,7 +475,7 @@ var jui2 = jui2 || {
 	 */
 	$.fn.getValues = function(){
 		var values = {}
-		this.find('j-textfield, j-textarea, j-passwordfield, j-combofield, j-datefield, j-numberfield, j-editor, j-timefield').filter(function(){
+		this.find('j-textfield, j-textarea, j-passwordfield, j-combofield, j-datefield, j-numberfield, j-editor').filter(function(){
 			var el = $(this);
 	    return (el.attr('name')||el.attr('id')) !== undefined
 	  }).each(function(i, val){
@@ -448,7 +530,7 @@ var jui2 = jui2 || {
 		components = $.getRGB(bgColor),
 		bgDelta = (components.R * 0.299) + (components.G * 0.587) + (components.B * 0.114);
 
-		return ((255 - bgDelta) < nThreshold) ? "#000000" : "#ffffff";
+		return ((255 - bgDelta) &lt; nThreshold) ? "#000000" : "#ffffff";
 	};
 
 	/**
@@ -493,9 +575,9 @@ var jui2 = jui2 || {
 		}
 		else
 			rect1 = this[0].getBoundingClientRect()
-		return !(rect1.right < rect2.left ||
+		return !(rect1.right &lt; rect2.left ||
 	    rect1.left > rect2.right ||
-	    rect1.bottom < rect2.top ||
+	    rect1.bottom &lt; rect2.top ||
 	    rect1.top > rect2.bottom)
 	};
 
@@ -507,10 +589,10 @@ var jui2 = jui2 || {
 	 */
 	$.fn.isInside = function(selector){
 		var rect1 = this[0].getBoundingClientRect(), rect2 = selector instanceof jQuery ? selector[0].getBoundingClientRect() : (selector instanceof HTMLCollection ? selector.getBoundingClientRect() : $(selector)[0].getBoundingClientRect())
-		return (rect2.right > rect1.right &&
-	    rect2.left < rect1.left ||
+		return (rect2.right > rect1.right &amp;&amp;
+	    rect2.left &lt; rect1.left ||
 	    rect2.bottom > rect1.bottom ||
-	    rect2.top < rect1.top)
+	    rect2.top &lt; rect1.top)
 	};
 
 	/**
@@ -613,7 +695,7 @@ var jui2 = jui2 || {
 	// Property: jQuery.resize.throttleWindow
 	//
 	// Throttle the native window object resize event to fire no more than once
-	// every <jQuery.resize.delay> milliseconds. Defaults to true.
+	// every &lt;jQuery.resize.delay> milliseconds. Defaults to true.
 	//
 	// Because the window object has its own resize event, it doesn't need to be
 	// provided by this plugin, and its execution can be left entirely up to the
@@ -631,7 +713,7 @@ var jui2 = jui2 || {
 	//
 	// Fired when an element's width or height changes. Because browsers only
 	// provide this event for the window element, for other elements a polling
-	// loop is initialized, running every <jQuery.resize.delay> milliseconds
+	// loop is initialized, running every &lt;jQuery.resize.delay> milliseconds
 	// to see if elements' dimensions have changed. You may bind with either
 	// .resize( fn ) or .bind( "resize", fn ), and unbind with .unbind( "resize" ).
 	//
@@ -672,7 +754,7 @@ var jui2 = jui2 || {
 			// jQuery will bind the event using DOM methods. Since only 'window'
 			// objects have a .setTimeout method, this should be a sufficient test.
 			// Unless, of course, we're throttling the 'resize' event for window.
-			if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+			if (!jq_resize[str_throttle] &amp;&amp; this[str_setTimeout]) {
 				return false;
 			}
 
@@ -699,7 +781,7 @@ var jui2 = jui2 || {
 			// jQuery will unbind the event using DOM methods. Since only 'window'
 			// objects have a .setTimeout method, this should be a sufficient test.
 			// Unless, of course, we're throttling the 'resize' event for window.
-			if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+			if (!jq_resize[str_throttle] &amp;&amp; this[str_setTimeout]) {
 				return false;
 			}
 
@@ -723,7 +805,7 @@ var jui2 = jui2 || {
 			// Since window has its own native 'resize' event, return false so that
 			// jQuery doesn't modify the event object. Unless, of course, we're
 			// throttling the 'resize' event for window.
-			if (!jq_resize[str_throttle] && this[str_setTimeout]) {
+			if (!jq_resize[str_throttle] &amp;&amp; this[str_setTimeout]) {
 				return false;
 			}
 
@@ -884,3 +966,69 @@ var jui2 = jui2 || {
 	}
 
 }(jQuery));
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="base.html">base</a></li><li><a href="button.html">button</a></li><li><a href="colorPicker.html">colorPicker</a></li><li><a href="comboField.html">comboField</a></li><li><a href="dataView.html">dataView</a></li><li><a href="dateField.html">dateField</a></li><li><a href="editor.html">editor</a></li><li><a href="gantt.html">gantt</a></li><li><a href="hslider.html">hslider</a></li><li><a href="loader%2520@extension%2520table.html">loader @extension table</a></li><li><a href="modal.html">modal</a></li><li><a href="numberField.html">numberField</a></li><li><a href="pagination%2520@extension%2520table.html">pagination @extension table</a></li><li><a href="passwordField.html">passwordField</a></li><li><a href="pivotIntersection%2520@extension%2520table.html">pivotIntersection @extension table</a></li><li><a href="pivotLeft%2520@extension%2520table.html">pivotLeft @extension table</a></li><li><a href="pivotTop%2520@extension%2520table.html">pivotTop @extension table</a></li><li><a href="table.html">table</a></li><li><a href="tableInPlaceForm%2520@extension%2520table.html">tableInPlaceForm @extension table</a></li><li><a href="textArea.html">textArea</a></li><li><a href="textField.html">textField</a></li></ul><h3>Events</h3><ul><li><a href="button.html#.event:click">click</a></li><li><a href="dataView.html#.event:afterdraw">afterdraw</a></li><li><a href="dateField.html#.event:select">select</a></li><li><a href="table.html#.event:afterdraw">afterdraw</a></li><li><a href="tableInPlaceForm%252520@extension%252520table.html#.event:cancel">cancel</a></li><li><a href="tableInPlaceForm%252520@extension%252520table.html#.event:submit">submit</a></li></ul><h3>Namespaces</h3><ul><li><a href="jui2.html">jui2</a></li><li><a href="jui2.ui.html">ui</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 18 2016 16:22:14 GMT+0700 (SE Asia Standard Time)
+</footer>
+
+<script>
+  prettyPrint();
+  $('nav h3:contains(Events)').hide().next().hide();
+  $('nav h3:contains(Classes)').text('Widgets');
+
+  /*code for example*/
+  if($('.page-title:contains(Source)').length == 0){
+    $('.prettyprint code').each(function(i, val){
+      $('<div class="livePreview"></div>').insertAfter($(this).parent())
+      $(this).parent().next().append($(this).text())
+    })
+
+    $('.code-caption:contains(nopreview)').each(function(i, val){
+      $(this).next().next().remove()
+      $(this).remove()
+    })
+  }
+  /*end of code for example*/
+  if($('.class-description:contains(custom web component)').length>0){
+    $('.page-title').text($('.page-title').text().replace('Class', 'Widget'))
+    $('h2:contains(Constructor)').hide().next().hide()
+  }
+
+  $('li:contains(@extension)').each(function(i, val){
+    var parentText = $(this).text().split('@extension')[1].trim(), parent = $('li').filter(function(){
+      return $(this).text().trim() === parentText
+    })
+    $(this).detach().insertAfter(parent).css({
+      'padding-left': '15px',
+      'padding-top': '6px',
+      'border-left': '1px solid #ddd',
+      'margin': '0px'
+    }).children().text($(this).text().split('@extension')[0].trim())
+  })
+
+  if($('.page-title:contains(@extension)').length>0){
+    var el = $('.page-title:contains(@extension)'), text = el.text()
+    el.text(text.split('@extension')[1].trim()+' Extension: '+text.split('@extension')[0].replace('Class: ', ''));
+    $('header h2').text($('header h2').text().split('@extension')[0].trim())
+    $('h2').filter(function(){
+      return $(this).text()==='Constructor';
+    }).hide().next().hide()
+  }
+</script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

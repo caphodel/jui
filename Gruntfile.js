@@ -49,6 +49,7 @@ module.exports = function (grunt) {
 					'js/hslider.js',
 					'js/tree.js',
 					'js/gantt.js',
+					'js/timeField.js',
 					'js/resize.js',
 					'js/editor.js'
 				],

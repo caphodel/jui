@@ -1,5 +1,5 @@
 /****dist/css/jui2.css****/
-/*! jui2 18-02-2016 Copyright Deddy Lasmono Putro */
+/*! jui2 24-02-2016 Copyright Deddy Lasmono Putro */
 /*function*/
 .disable-select {
   -webkit-touch-callout: none;
@@ -172,12 +172,14 @@ j-button[color="red"]:active {
 }
 /************* textfield/numberField/passwordField/dateField/comboField/textArea *****************/
 j-textField,
+j-timeField,
 j-numberField,
 j-passwordField,
 j-dateField,
 j-comboField,
 j-colorPicker,
-j-textArea {
+j-textArea,
+j-editor {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -190,11 +192,13 @@ j-textArea {
   white-space: nowrap;
 }
 j-textField label,
+j-timeField label,
 j-numberField label,
 j-passwordField label,
 j-dateField label,
 j-comboField label,
 j-colorPicker label,
+j-editor label,
 j-textArea label {
   width: 125px;
   display: inline-block;
@@ -204,6 +208,7 @@ j-textArea label {
   line-height: 18px;
 }
 j-textField input,
+j-timeField input,
 j-numberField input,
 j-passwordField input,
 j-dateField input,
@@ -221,6 +226,7 @@ j-textArea textarea {
   white-space: normal;
 }
 j-textField[icon] input,
+j-timeField[icon] input,
 j-numberField[icon] input,
 j-passwordField[icon] input,
 j-dateField[icon] input,
@@ -230,6 +236,7 @@ j-colorPicker[icon] input {
   width: 135px;
 }
 j-textField > i,
+j-timeField > i,
 j-numberField > i,
 j-passwordField > i,
 j-dateField > i,
@@ -243,6 +250,7 @@ j-colorPicker > i {
   position: absolute;
 }
 .j-table-inplace-form > j-textField > i,
+.j-table-inplace-form > j-timeField > i,
 .j-table-inplace-form > j-numberField > i,
 .j-table-inplace-form > j-passwordField > i,
 .j-table-inplace-form > j-dateField > i,
@@ -252,7 +260,8 @@ j-colorPicker > i {
   top: 0;
   margin-left: -13px;
 }
-j-textArea > * {
+j-textArea > *,
+j-editor > * {
   vertical-align: top;
 }
 /************* colorPicker *****************/
@@ -1211,6 +1220,32 @@ j-gantt .j-gantt-milestone:before {
 j-editor .wysiwyg-container {
   display: inline-block;
   border: 1px solid #d9d9d9;
+}
+/************* timefield *****************/
+j-timefield input {
+  width: 30px;
+}
+[belongto=j-timeField] > table {
+  border-collapse: collapse;
+}
+[belongto=j-timeField] > table tr:nth-child(1) td,
+[belongto=j-timeField] > table tr:nth-child(4) td {
+  border-bottom: 1px solid #53abe6;
+  text-align: center;
+}
+[belongto=j-timeField] > table tr:nth-child(2) td:hover,
+[belongto=j-timeField] > table tr:nth-child(3) td:hover,
+[belongto=j-timeField] > table tr:nth-child(5) td:hover {
+  background: #d6e8f6;
+}
+[belongto=j-timeField] > table td {
+  padding: 4px;
+  width: 30px;
+  text-align: center;
+  cursor: pointer;
+}
+[belongto=j-timeField] > table td.j-active {
+  background: #fff3a1;
 }
 ;/****css/wysiwyg-editor.css****/
 /*

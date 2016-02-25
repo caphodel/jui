@@ -158,3 +158,23 @@ this["jui2"]["tmpl"]["textField"] = Handlebars.template({"1":function(depth0,hel
     + this.escapeExpression(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"type","hash":{},"data":data}) : helper)))
     + "\"></input>";
 },"useData":true});
+
+this["jui2"]["tmpl"]["timeField"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+    return ": ";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+    var stack1, helper, alias1=helpers.helperMissing, alias2="function", alias3=this.escapeExpression;
+
+  return "<label>"
+    + ((stack1 = ((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"label","hash":{},"data":data}) : helper))) != null ? stack1 : "")
+    + "</label>"
+    + ((stack1 = (helpers.isnt || (depth0 && depth0.isnt) || alias1).call(depth0,(depth0 != null ? depth0.label : depth0),"",{"name":"isnt","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + "<input type=\""
+    + alias3(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"type","hash":{},"data":data}) : helper)))
+    + "\"></input> : <input type=\""
+    + alias3(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"type","hash":{},"data":data}) : helper)))
+    + "\"></input>\r\n";
+},"useData":true});
+
+this["jui2"]["tmpl"]["timeFieldBody"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+    return "<div style=\"display: none;\">\r\n	<table>\r\n		<tr>\r\n			<td colspan=\"12\">Hour</td>\r\n		</tr>\r\n		<tr>\r\n			<td>00</td>\r\n			<td>01</td>\r\n			<td>02</td>\r\n			<td>03</td>\r\n			<td>04</td>\r\n			<td>05</td>\r\n			<td>06</td>\r\n			<td>07</td>\r\n			<td>08</td>\r\n			<td>09</td>\r\n			<td>10</td>\r\n			<td>11</td>\r\n		</tr>\r\n		<tr>\r\n			<td>12</td>\r\n			<td>13</td>\r\n			<td>14</td>\r\n			<td>15</td>\r\n			<td>16</td>\r\n			<td>17</td>\r\n			<td>18</td>\r\n			<td>19</td>\r\n			<td>20</td>\r\n			<td>21</td>\r\n			<td>22</td>\r\n			<td>23</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"12\">Minute</td>\r\n		</tr>\r\n		<tr>\r\n			<td>00</td>\r\n			<td>05</td>\r\n			<td>10</td>\r\n			<td>15</td>\r\n			<td>20</td>\r\n			<td>25</td>\r\n			<td>30</td>\r\n			<td>35</td>\r\n			<td>40</td>\r\n			<td>45</td>\r\n			<td>50</td>\r\n			<td>55</td>\r\n		</tr>\r\n		<tr>\r\n			<td colspan=\"12\">\r\n				<j-button class=\"j-timeField-setTime\">Set Time</j-button>\r\n			</td>\r\n		</tr>\r\n	</table>\r\n</div>\r\n";
+},"useData":true});

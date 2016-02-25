@@ -58,10 +58,6 @@
 				$table.detach().appendTo($div);
 				$('#j-comboField-'+id).remove();
 				$div.hide();
-				//if($(event.target).parents('j-combofield, [belongto=j-comboField]').length == 0 && $(event.target).parents('j-combofield')[0] != $self[0])
-					//$('[belongto=j-comboField]').remove()
-				/*if($(event.target).parents('j-combofield, [belongto=j-comboField]').length == 0)
-					$('[belongto=j-comboField]').remove()*/
 			}
 		});
 

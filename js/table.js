@@ -153,6 +153,10 @@ $('#table1').on('afterdraw', function(){
 
 			$tbody.find( "> tr").click(function() {
 				$(this).addClass('j-active').siblings().removeClass('j-active')
+				var sel = $(this).find('td:visible').last().find('input[type=radio]')
+				if(sel.length > 0){
+					sel.prop('checked', true)
+				}
 			})
 
 			$thead.find(' > tr > th .j-table-sort').off('click').click(function(){
